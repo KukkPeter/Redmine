@@ -1,0 +1,19 @@
+{
+  "name": "redmine-server",
+  "version": "1.0.0",
+  "description": "Rendszerfejlesztés - Redmine - 3.Csapat - SERVER",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KukkPeter/Redmine.git"
+  },
+  "author": "Kukk Péter, Regenye Tamás, Szűcs Gergely",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/KukkPeter/Redmine/issues"
+  },
+  "homepage": "https://github.com/KukkPeter/Redmine#readme"
+}
