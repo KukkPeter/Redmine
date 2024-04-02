@@ -12,6 +12,7 @@ export class UserController extends Controller {
     public async loginUser(@Body() body: LoginUser): Promise<IResponse> {
         try {
             const user = {
+                id: 0,
                 email: body.email,
                 password: body.password
             };

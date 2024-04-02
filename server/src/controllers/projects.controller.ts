@@ -1,4 +1,4 @@
-import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body } from 'tsoa';
+import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body, Query } from 'tsoa';
 import { IResponse } from '../models/IResponse.interface';
 import { NewTask } from '../models/newTask.interface';
 
@@ -12,7 +12,7 @@ let projects = [
 
 let tasks = [
     { id: 0, name: 'task0', description: 'description 0', project_id: 0, user_id: 0, deadline: '2024-04-04' },
-    { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 0, deadline: '2024-04-04' },
+    { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 1, deadline: '2024-04-04' },
     { id: 2, name: 'task2', description: 'description 2', project_id: 1, user_id: 0, deadline: '2024-04-04' },
     { id: 3, name: 'task3', description: 'description 3', project_id: 1, user_id: 0, deadline: '2024-04-04' },
     { id: 4, name: 'task4', description: 'description 4', project_id: 2, user_id: 0, deadline: '2024-04-04' },
@@ -111,8 +111,9 @@ export class ProjetsController extends Controller {
         let index = projects.findIndex(x => x.id == projectId);
 
         try {
+            // Fejleszőhöz hozzákell majd rendelni az adatbázisban a feladatot (Majd a 2.beadandonál)
             let project = projects[index];
-            let task = { id: Math.random() * 10, name: body.name, description: body.description, project_id: project.id, user_id: body.developer_id, deadline: '2024-04-04' };
+            let task = { id: Math.random() * 10, name: body.name, description: body.description, project_id: project.id, user_id: body.manager_id, deadline: '2024-04-04' };
             tasks.push(task);
             
             return {
@@ -123,28 +124,6 @@ export class ProjetsController extends Controller {
         } catch(err) {
             this.setStatus(400);
 
-            return {
-                message: 'Error',
-                status: '400',
-                data: err
-            };
-        }
-    }
-
-    @Tags('Projects')
-    @Get('/tasks')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
-    public async getTasksForManager(): Promise<IResponse> {
-        try {
-            // Statikus adatatok visszaadása (egyenlőre amíg nincs adatbázis)
-            return {
-                message: 'OK',
-                status: '200',
-                data: tasks
-            };
-        } catch(err) {
-            this.setStatus(400);
             return {
                 message: 'Error',
                 status: '400',

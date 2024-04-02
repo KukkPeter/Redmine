@@ -1,5 +1,6 @@
 const taskModal = new bootstrap.Modal('#taskModal', {backdrop: true, focus: true, keyboard: false});
 const newTaskModal = new bootstrap.Modal('#newTaskModal', {backdrop: true, focus: true, keyboard: false});
+var showOwnTasks = false;
 
 async function postData(url = "", data = {}) {
   const response = await fetch(url, {
@@ -24,14 +25,26 @@ function login(){
   postData("http://localhost:8000/user/login", {email: email, password: password}).then((data) => {
     if(data.status == "200") {
       // Sikeres bejelentkezés
-      console.log(data.data);
       alert('Sikeres bejelentkezés!');
 
-      localStorage.setItem('user', data.data);
+      localStorage.setItem('user', JSON.stringify(data.data));
       window.location.replace('http://localhost:3000/main');
     } else {
       // Sikertelen bejelentkezés
       alert('Hibás email cím vagy jelszó! Kérlek próbáld újra késöbb.');
+    }
+  });
+}
+
+function logout() {
+  postData("http://localhost:8000/user/logout", {}).then((data) => {
+    if(data.status=="200") {
+      // Sikeres lekérdezés
+      localStorage.clear();
+      window.location.replace('http://localhost:3000');
+    } else {
+      // Sikertelen lekérdezés
+      console.error(data);
     }
   });
 }
@@ -62,13 +75,18 @@ function selectProject(id) {
   document.getElementById('tasksTable').innerHTML = "";
   document.getElementById('projectIDSpan').innerHTML = id;
 
+  document.getElementById('btnCheck').checked = false;
+
+  showOwnTasks = false;
+  
+
   fetch(`http://localhost:8000/projects/${id}/tasks`)
     .then((res) => res.json())
     .then((data) => {
       if(data.status == "200") {
         // Sikeres lekérdezés
         data.data.forEach(e => {
-          document.getElementById('tasksTable').innerHTML += `<tr id="task-${e.id}"><td>${e.name}</td><td>${e.description}</td><td>${e.user_id}</td><td>${e.deadline}</td></tr>`;
+          document.getElementById('tasksTable').innerHTML += `<tr id="task-${e.id}-${e.user_id}"><td>${e.name}</td><td>${e.description}</td><td>0</td><td>${e.deadline}</td></tr>`;
         });
         taskModal.show();
       } else {
@@ -105,7 +123,9 @@ function addNewTask() {
   let desc = document.getElementById('newTaskDesc').value;
   let devID = document.getElementById('developersSelectList').value;
 
-  postData(`http://localhost:8000/projects/${projectId}/newTask`, { name: name, description: desc, developer_id: devID }).then((data) => {
+  let userId = JSON.parse(localStorage.getItem('user')).id;
+  
+  postData(`http://localhost:8000/projects/${projectId}/newTask`, { name: name, description: desc, developer_id: devID, manager_id: userId }).then((data) => {
     if(data.status == "200") {
       // Sikeres lekérdezés
       alert('Feladat hozzáadva a projekthez!');
@@ -126,7 +146,7 @@ function sortList(data) {
   for (var i = 0, row; row = table.rows[i]; i++) {
     for (var j = 0, col; col = row.cells[j]; j++) {
       if(j == 2 && col.innerHTML != data) {
-        row.style = "display:none;";
+        row.style = "display:none;cursor:pointer;";
       }
     }  
   }
@@ -136,8 +156,33 @@ function resetSort() {
   let table = document.getElementById('project-table');
   for (var i = 0, row; row = table.rows[i]; i++) {
     for (var j = 0, col; col = row.cells[j]; j++) {
-      row.style = "";
+      row.style = "cursor:pointer;";
     }  
+  }
+}
+
+function sortTasks() {
+  let userId = JSON.parse(localStorage.getItem('user')).id;
+  let table = document.getElementById('tasksTable');
+
+  if(showOwnTasks) {
+    showOwnTasks = false;
+    for (var i = 0, row; row = table.rows[i]; i++) {
+      for (var j = 0, col; col = row.cells[j]; j++) {
+        if(j == 2 && row.id.split('-')[2] != userId) {
+          row.style="";
+        }
+      }  
+    }
+  } else {
+    showOwnTasks = true;
+    for (var i = 0, row; row = table.rows[i]; i++) {
+      for (var j = 0, col; col = row.cells[j]; j++) {
+        if(j == 2 && row.id.split('-')[2] != userId) {
+          row.style="display:none;";
+        }
+      }  
+    }
   }
 }
 

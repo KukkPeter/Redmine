@@ -76,12 +76,17 @@
 					"developer_id": {
 						"type": "number",
 						"format": "double"
+					},
+					"manager_id": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"name",
 					"description",
-					"developer_id"
+					"developer_id",
+					"manager_id"
 				],
 				"type": "object",
 				"additionalProperties": true
@@ -423,41 +428,6 @@
 						}
 					}
 				}
-			}
-		},
-		"/projects/tasks": {
-			"get": {
-				"operationId": "GetTasksForManager",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Projects"
-				],
-				"security": [],
-				"parameters": []
 			}
 		},
 		"/developers": {
