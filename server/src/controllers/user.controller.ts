@@ -12,6 +12,7 @@ export class UserController extends Controller {
     public async loginUser(@Body() body: LoginUser): Promise<IResponse> {
         try {
             const user = {
+                id: 0,
                 email: body.email,
                 password: body.password
             };
@@ -20,6 +21,28 @@ export class UserController extends Controller {
                 message: 'OK',
                 status: '200',
                 data: user
+            };
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err
+            };
+        }
+    }
+
+    @Tags('User')
+    @Post('/logout')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async logoutUser(): Promise<IResponse> {
+        try {
+            return {
+                message: 'OK',
+                status: '200',
+                data: 'Kijelentkezve'
             };
         } catch(err) {
             this.setStatus(400);

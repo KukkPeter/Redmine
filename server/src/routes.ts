@@ -51,6 +51,7 @@ const models: TsoaRoute.Models = {
             "name": {"dataType":"string","required":true},
             "description": {"dataType":"string","required":true},
             "developer_id": {"dataType":"double","required":true},
+            "manager_id": {"dataType":"double","required":true},
         },
         "additionalProperties": true,
     },
@@ -93,6 +94,35 @@ export function RegisterRoutes(app: Router) {
 
               templateService.apiHandler({
                 methodName: 'loginUser',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/user/logout',
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.logoutUser)),
+
+            function UserController_logoutUser(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new UserController();
+
+              templateService.apiHandler({
+                methodName: 'logoutUser',
                 controller,
                 response,
                 next,
@@ -243,35 +273,6 @@ export function RegisterRoutes(app: Router) {
 
               templateService.apiHandler({
                 methodName: 'newTaskForProject',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: 200,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/projects/tasks',
-            ...(fetchMiddlewares<RequestHandler>(ProjetsController)),
-            ...(fetchMiddlewares<RequestHandler>(ProjetsController.prototype.getTasksForManager)),
-
-            function ProjetsController_getTasksForManager(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-                const controller = new ProjetsController();
-
-              templateService.apiHandler({
-                methodName: 'getTasksForManager',
                 controller,
                 response,
                 next,
