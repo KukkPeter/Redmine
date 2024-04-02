@@ -1,0 +1,111 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"IResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string"
+					},
+					"data": {}
+				},
+				"required": [
+					"message",
+					"status",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"LoginUser": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": true
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "redmine-server",
+		"version": "Beadando#1",
+		"description": "Redmine - 3. Csapat",
+		"license": {
+			"name": "GPL-3.0"
+		},
+		"contact": {
+			"name": "Regenye Tamás | Kukk Péter | Szűcs Gergely ",
+			"url": "https://github.com/KukkPeter/Redmine"
+		}
+	},
+	"paths": {
+		"/user/login": {
+			"post": {
+				"operationId": "LoginUser",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginUser"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "http://localhost:8000/"
+		}
+	]
+}
