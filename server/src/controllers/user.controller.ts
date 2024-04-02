@@ -33,6 +33,28 @@ export class UserController extends Controller {
     }
 
     @Tags('User')
+    @Post('/logout')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async logoutUser(): Promise<IResponse> {
+        try {
+            return {
+                message: 'OK',
+                status: '200',
+                data: 'Kijelentkezve'
+            };
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err
+            };
+        }
+    }
+
+    @Tags('User')
     @Post('/register')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')

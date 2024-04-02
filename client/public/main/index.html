@@ -17,7 +17,7 @@
       <h2>Projektek</h2>
       <div class="row">
         <div class="col-md-12">
-          <table class="table">
+          <table class="table table-hover">
             <thead>
               <tr>
                 <th>Projekt neve</th>
@@ -28,6 +28,67 @@
             </thead>
             <tbody id="project-table"></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal fade" id="taskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="taskModalTitle">Feladatok</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="taskModalBody">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Feladat neve</th>
+                  <th>Leírás</th>
+                  <th>Fejlesztő</th>
+                  <th>Határidő</th>
+                </tr>
+              </thead>
+              <tbody id="tasksTable"></tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <span class="d-none" id="projectIDSpan"></span>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+            <button type="button" onclick="loadDevelopersList()" data-bs-dismiss="modal" class="btn btn-success">Új feladat hozzáadása</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add new Task Modal -->
+    <div class="modal fade" id="newTaskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="newTaskModalTitle">Új feladat hozzáadása</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="newTaskModalBody">
+            <div class="mb-3">
+              <label for="newTaskName" class="form-label">Feladat neve</label>
+              <input type="text" class="form-control" id="newTaskName" placeholder="Feladat neve">
+            </div>
+            <div class="mb-3">
+              <label for="newTaskDesc" class="form-label">Leírás</label>
+              <textarea class="form-control" id="newTaskDesc" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <select class="form-select" id="developersSelectList" aria-label="Válassz fejlesztőt">
+                <option selected>Válassz fejlesztőt</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-target="#taskModal" data-bs-toggle="modal">Mégse</button>
+            <button type="button" class="btn btn-success" onclick="addNewTask()">Hozzáadás</button>
+          </div>
         </div>
       </div>
     </div>
