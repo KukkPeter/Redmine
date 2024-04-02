@@ -49,7 +49,7 @@ function loadProjects() {
       if(data.status == "200") {
         // Sikeres lekérés
         data.data.forEach(e => {
-          document.getElementById('project-table').innerHTML += `<tr onclick="selectProject(${e.id})" style="cursor: pointer;" id="project-${e.id}"><td>${e.name}</td><td>${e.description}</td><td>valamennyi</td><td>${e.type_id}</td></tr>`;
+          document.getElementById('project-table').innerHTML += `<tr onclick="selectProject(${e.id})" style="cursor: pointer;" id="project-${e.id}"><td>${e.name}</td><td>${e.description}</td><td>${e.type_id}</td></tr>`;
         });
       } else {
         // Sikertelen lekérés
