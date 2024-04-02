@@ -2,8 +2,9 @@
   "name": "redmine-client",
   "version": "1.0.0",
   "description": "Rendszerfejlesztés - Redmine - 3.Csapat - CLIENT",
-  "main": "index.js",
+  "main": "frontend.js",
   "scripts": {
+    "start": "node frontend.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/KukkPeter/Redmine/issues"
   },
-  "homepage": "https://github.com/KukkPeter/Redmine#readme"
+  "homepage": "https://github.com/KukkPeter/Redmine#readme",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
 }
