@@ -120,6 +120,28 @@ function addNewTask() {
   });
 }
 
+function sortList(data) {
+  resetSort();
+  let table = document.getElementById('project-table');
+  for (var i = 0, row; row = table.rows[i]; i++) {
+    for (var j = 0, col; col = row.cells[j]; j++) {
+      if(j == 2 && col.innerHTML != data) {
+        row.style = "display:none;";
+      }
+    }  
+  }
+}
+
+function resetSort() {
+  let table = document.getElementById('project-table');
+  for (var i = 0, row; row = table.rows[i]; i++) {
+    for (var j = 0, col; col = row.cells[j]; j++) {
+      row.style = "";
+    }  
+  }
+}
+
+// Main oldal onload metódusa
 const MainPage = async () => {
   await checkLogin();
 
