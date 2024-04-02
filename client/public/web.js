@@ -192,3 +192,10 @@ const MainPage = async () => {
 
   loadProjects();
 }
+
+// Bejelentkezés oldal onload metódusa
+function AuthPage() {
+  if(localStorage.getItem('user') != null) {
+    window.location.replace('http://localhost:3000/main');
+  }
+}
