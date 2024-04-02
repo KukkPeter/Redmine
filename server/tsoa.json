@@ -1,0 +1,25 @@
+{
+	"controllerPathGlobs": [
+		"./src/controllers/**/*.ts"
+	],
+	
+	"entryFile": "./src/server.ts",
+	"spec": {
+		"outputDirectory": ".",
+		"entryFile": "./src/server.ts",
+		"host": "localhost:8000",
+		"basePath": "/",
+		"schemes": [ "http" ],
+		"description": "Redmine - 3. Csapat",
+		"version": "Beadando#1",
+		"contact": {
+			"name":"Regenye Tamás | Kukk Péter | Szűcs Gergely ",
+			"url":"https://github.com/KukkPeter/Redmine"
+		},
+		"specVersion":3
+	},
+	"routes": {
+		"basePath": "/",
+		"routesDir": "./src/"
+	}
+}
