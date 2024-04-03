@@ -1,4 +1,4 @@
-import API from './fetch.js';
+import API from './api.js';
 
 class Authenticator {
     constructor() { }

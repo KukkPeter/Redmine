@@ -1,4 +1,4 @@
-import API from './fetch.js';
+import API from './main.js';
 
 class MainPage {
     constructor() {
