@@ -1,4 +1,4 @@
-import API from './main.js';
+import API from './api.js';
 
 class MainPage {
     constructor() {
