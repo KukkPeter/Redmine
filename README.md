@@ -3,7 +3,7 @@
 
 **Első beadandó**
 
-Határidő: *2024. április 4.*  
+Határidő: *2024. április 10.*  
 Feladat: Szerver - Kliens
   
 
