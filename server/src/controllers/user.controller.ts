@@ -1,4 +1,4 @@
-import { Route, Post, Body, Controller, SuccessResponse, Tags, Response } from 'tsoa';
+import { Route, Get, Post, Body, Controller, SuccessResponse, Tags, Response, Path } from 'tsoa';
 import { IResponse } from '../interfaces/IResponse.interface';
 import { LoginUser } from '../interfaces/loginUser.interface';
 import { RegisterUser } from '../interfaces/registerUser.interface';
@@ -11,8 +11,8 @@ let users = [
 ];
 
 @Route('/user')
+@Tags('User')
 export class UserController extends Controller {
-    @Tags('User')
     @Post('/login')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -44,7 +44,6 @@ export class UserController extends Controller {
         }
     }
 
-    @Tags('User')
     @Post('/logout')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -66,7 +65,34 @@ export class UserController extends Controller {
         }
     }
 
-    @Tags('User')
+    @Get('/{userId}')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async getUserById(@Path() userId: number): Promise<IResponse> {
+        try {
+            let index = users.findIndex(x => x.id == userId);
+
+            if(index != -1) {
+                let user = users[index];
+                
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: user
+                };
+            }
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err.message
+            };
+        }
+
+    }
+
     @Post('/register')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
