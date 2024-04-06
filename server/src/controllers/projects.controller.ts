@@ -11,19 +11,26 @@ let projects = [
 ];
 
 let tasks = [
-    { id: 0, name: 'task0', description: 'description 0', project_id: 0, user_id: 0, deadline: '2024-04-04' },
-    { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 1, deadline: '2024-04-04' },
-    { id: 2, name: 'task2', description: 'description 2', project_id: 1, user_id: 0, deadline: '2024-04-04' },
-    { id: 3, name: 'task3', description: 'description 3', project_id: 1, user_id: 1, deadline: '2024-04-04' },
-    { id: 4, name: 'task4', description: 'description 4', project_id: 2, user_id: 2, deadline: '2024-04-04' },
-    { id: 5, name: 'task5', description: 'description 5', project_id: 2, user_id: 0, deadline: '2024-04-04' },
-    { id: 6, name: 'task6', description: 'description 6', project_id: 3, user_id: 2, deadline: '2024-04-04' },
-    { id: 7, name: 'task7', description: 'description 7', project_id: 3, user_id: 1, deadline: '2024-04-04' },
+    { id: 0, name: 'task0', description: 'description 0', project_id: 0, user_id: 0, deadline: '2024-04-10' },
+    { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 1, deadline: '2024-04-10' },
+    { id: 2, name: 'task2', description: 'description 2', project_id: 1, user_id: 0, deadline: '2024-04-10' },
+    { id: 3, name: 'task3', description: 'description 3', project_id: 1, user_id: 1, deadline: '2024-04-10' },
+    { id: 4, name: 'task4', description: 'description 4', project_id: 2, user_id: 2, deadline: '2024-04-10' },
+    { id: 5, name: 'task5', description: 'description 5', project_id: 2, user_id: 0, deadline: '2024-04-10' },
+    { id: 6, name: 'task6', description: 'description 6', project_id: 3, user_id: 2, deadline: '2024-04-10' },
+    { id: 7, name: 'task7', description: 'description 7', project_id: 3, user_id: 1, deadline: '2024-04-10' },
+];
+
+let project_developers = [
+    { developer_id: 0, project_id: 0 }, 
+    { developer_id: 1, project_id: 1 }, 
+    { developer_id: 2, project_id: 2 }, 
+    { developer_id: 3, project_id: 3 }
 ];
 
 @Route('/projects')
+@Tags('Projects')
 export class ProjetsController extends Controller {
-    @Tags('Projects')
     @Get('/')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -45,7 +52,6 @@ export class ProjetsController extends Controller {
         }
     }
 
-    @Tags('Projects')
     @Get('/{projectId}')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -73,7 +79,6 @@ export class ProjetsController extends Controller {
         }
     }
 
-    @Tags('Projects')
     @Get('/{projectId}/tasks')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -104,7 +109,36 @@ export class ProjetsController extends Controller {
         }
     }
 
-    @Tags('Projects')
+    @Get('/{projectId}/developers')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async getDevelopersForProject(@Path() projectId: number): Promise<IResponse> {
+        try {
+            let index = projects.findIndex(x => x.id == projectId);
+
+            if(index != -1) {
+                let project = projects[index];
+                let prjctDevelopers = project_developers.filter(x => x.project_id == project.id);
+    
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: prjctDevelopers
+                };
+            } else {
+                throw new Error("Nincs projekt ezzel az ID-val!");
+            }
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err.message
+            };
+        }
+    }
+
     @Post('/{projectId}/newTask')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -112,17 +146,25 @@ export class ProjetsController extends Controller {
         try {
             let index = projects.findIndex(x => x.id == projectId);
             if(index != -1) {
-                // Fejlesztőhöz hozzákell majd rendelni az adatbázisban a feladatot (Majd a 2.beadandonál)
+                // Feladat hozzáadása
                 let project = projects[index];
+                let today = new Date(Date.now());
+                today.setHours(23, 59, 59, 0);
+
                 let task = { 
                     id: Math.floor(Math.random() * (100 - 10 + 1) + 10), // Random szám 10 és 100 között
                     name: body.name, 
                     description: body.description, 
                     project_id: project.id, 
                     user_id: body.manager_id, 
-                    deadline: '2024-04-04' 
+                    deadline: today.toLocaleString()
                 };
                 tasks.push(task);
+                
+                // Fejlesztő hozzáadása a projekthez
+                if(project_developers.find(x => x.developer_id == body.developer_id && x.project_id == projectId) == undefined) {
+                    project_developers.push({ developer_id: body.developer_id, project_id: projectId});
+                }
                 
                 return {
                     message: 'OK',

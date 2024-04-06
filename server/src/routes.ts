@@ -67,15 +67,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ProjectDevelopers": {
-        "dataType": "refObject",
-        "properties": {
-            "developer_id": {"dataType":"double","required":true},
-            "projet_id": {"dataType":"double","required":true},
-        },
-        "additionalProperties": true,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const templateService = new ExpressTemplateService(models, {"noImplicitAdditionalProperties":"ignore","bodyCoercion":true});
 
@@ -353,6 +344,36 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/projects/:projectId/developers',
+            ...(fetchMiddlewares<RequestHandler>(ProjetsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProjetsController.prototype.getDevelopersForProject)),
+
+            function ProjetsController_getDevelopersForProject(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    projectId: {"in":"path","name":"projectId","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new ProjetsController();
+
+              templateService.apiHandler({
+                methodName: 'getDevelopersForProject',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/projects/:projectId/newTask',
             ...(fetchMiddlewares<RequestHandler>(ProjetsController)),
             ...(fetchMiddlewares<RequestHandler>(ProjetsController.prototype.newTaskForProject)),
@@ -462,36 +483,6 @@ export function RegisterRoutes(app: Router) {
 
               templateService.apiHandler({
                 methodName: 'addNewDeveloper',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: 200,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/developers/addToProject',
-            ...(fetchMiddlewares<RequestHandler>(DevelopersController)),
-            ...(fetchMiddlewares<RequestHandler>(DevelopersController.prototype.addToProject)),
-
-            function DevelopersController_addToProject(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    body: {"in":"body","name":"body","required":true,"ref":"ProjectDevelopers"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-                const controller = new DevelopersController();
-
-              templateService.apiHandler({
-                methodName: 'addToProject',
                 controller,
                 response,
                 next,

@@ -106,24 +106,6 @@
 				],
 				"type": "object",
 				"additionalProperties": true
-			},
-			"ProjectDevelopers": {
-				"properties": {
-					"developer_id": {
-						"type": "number",
-						"format": "double"
-					},
-					"projet_id": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"developer_id",
-					"projet_id"
-				],
-				"type": "object",
-				"additionalProperties": true
 			}
 		},
 		"securitySchemes": {}
@@ -518,6 +500,51 @@
 				]
 			}
 		},
+		"/projects/{projectId}/developers": {
+			"get": {
+				"operationId": "GetDevelopersForProject",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Projects"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/projects/{projectId}/newTask": {
 			"post": {
 				"operationId": "NewTaskForProject",
@@ -692,51 +719,6 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/NewDeveloper"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/developers/addToProject": {
-			"post": {
-				"operationId": "AddToProject",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Developers"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/ProjectDevelopers"
 							}
 						}
 					}
