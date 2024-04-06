@@ -1,6 +1,7 @@
 import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body } from 'tsoa';
-import { IResponse } from '../models/IResponse.interface';
-import { ProjectDevelopers } from '../models/projectDevelopers.interface';
+import { IResponse } from '../interfaces/IResponse.interface';
+import { ProjectDevelopers } from '../interfaces/projectDevelopers.interface';
+import { NewDeveloper } from '../interfaces/newDeveloper.interface';
 
 const developers = [
     { id: 0, name: 'dev0', email: '0@dev.com' },
@@ -9,8 +10,8 @@ const developers = [
 ];
 
 @Route('/developers')
+@Tags('Developers')
 export class DevelopersController extends Controller {
-    @Tags('Developers')
     @Get('/')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -27,12 +28,71 @@ export class DevelopersController extends Controller {
             return {
                 message: 'Error',
                 status: '400',
-                data: err
+                data: err.message
             };
         }
     }
 
-    @Tags('Developers')
+    @Get('/{developerId}')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async getDeveloperById(@Path() developerId: number): Promise<IResponse> {
+        try {
+            let index = developers.findIndex(x => x.id == developerId);
+            
+            if(index != -1) {
+                let developer = developers[index];
+
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: developer
+                };
+            } else {
+                throw new Error("Nincs fejlesztó ezzel az ID-val!");
+            }
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err.message
+            };
+        }
+    }
+
+    @Post('/new')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async addNewDeveloper(@Body() body: NewDeveloper): Promise<IResponse> {
+        try {
+            if(developers.find(x => x.email == body.email) == undefined) {
+                developers.push({
+                    id: Math.floor(Math.random() * (100 - 10 + 1) + 10), // Random szám 10 és 100 között
+                    email: body.email,
+                    name: body.name
+                });
+
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: 'Fejlesztő hozzáadva!'
+                };
+            } else {
+                throw new Error("Ezzel az email címmel már van fejlesztő!");
+            }
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err.message
+            };
+        }
+    }
+
     @Post('/addToProject')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -51,7 +111,7 @@ export class DevelopersController extends Controller {
             return {
                 message: 'Error',
                 status: '400',
-                data: err
+                data: err.message
             };
         }
     }

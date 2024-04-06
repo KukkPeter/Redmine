@@ -56,6 +56,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "NewDeveloper": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "email": {"dataType":"string","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProjectDevelopers": {
         "dataType": "refObject",
         "properties": {
@@ -284,6 +293,65 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/projects/types',
+            ...(fetchMiddlewares<RequestHandler>(ProjetsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProjetsController.prototype.getProjectTypes)),
+
+            function ProjetsController_getProjectTypes(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new ProjetsController();
+
+              templateService.apiHandler({
+                methodName: 'getProjectTypes',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/projects/types/:typeId',
+            ...(fetchMiddlewares<RequestHandler>(ProjetsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProjetsController.prototype.getProjectTypeById)),
+
+            function ProjetsController_getProjectTypeById(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    typeId: {"in":"path","name":"typeId","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new ProjetsController();
+
+              templateService.apiHandler({
+                methodName: 'getProjectTypeById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/developers',
             ...(fetchMiddlewares<RequestHandler>(DevelopersController)),
             ...(fetchMiddlewares<RequestHandler>(DevelopersController.prototype.getDevelopers)),
@@ -302,6 +370,66 @@ export function RegisterRoutes(app: Router) {
 
               templateService.apiHandler({
                 methodName: 'getDevelopers',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/developers/:developerId',
+            ...(fetchMiddlewares<RequestHandler>(DevelopersController)),
+            ...(fetchMiddlewares<RequestHandler>(DevelopersController.prototype.getDeveloperById)),
+
+            function DevelopersController_getDeveloperById(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    developerId: {"in":"path","name":"developerId","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new DevelopersController();
+
+              templateService.apiHandler({
+                methodName: 'getDeveloperById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/developers/new',
+            ...(fetchMiddlewares<RequestHandler>(DevelopersController)),
+            ...(fetchMiddlewares<RequestHandler>(DevelopersController.prototype.addNewDeveloper)),
+
+            function DevelopersController_addNewDeveloper(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    body: {"in":"body","name":"body","required":true,"ref":"NewDeveloper"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new DevelopersController();
+
+              templateService.apiHandler({
+                methodName: 'addNewDeveloper',
                 controller,
                 response,
                 next,

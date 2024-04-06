@@ -1,6 +1,6 @@
 import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body, Query } from 'tsoa';
-import { IResponse } from '../models/IResponse.interface';
-import { NewTask } from '../models/newTask.interface';
+import { IResponse } from '../interfaces/IResponse.interface';
+import { NewTask } from '../interfaces/newTask.interface';
 
 // Statikus adat
 let projects = [
@@ -8,6 +8,13 @@ let projects = [
     { id: 1, name: 'testProject1', type_id: 1, description: 'test Description 1'},
     { id: 2, name: 'testProject2', type_id: 2, description: 'test Description 2'},
     { id: 3, name: 'testProject3', type_id: 3, description: 'test Description 3'}
+];
+
+let project_types = [
+    {id: 0, name: "Teszt Tipus 0"},
+    {id: 1, name: "Teszt Tipus 1"},
+    {id: 2, name: "Teszt Tipus 2"},
+    {id: 3, name: "Teszt Tipus 3"},
 ];
 
 let tasks = [
@@ -40,7 +47,7 @@ export class ProjetsController extends Controller {
             return {
                 message: 'Error',
                 status: '400',
-                data: err
+                data: err.message
             };
         }
     }
@@ -50,25 +57,25 @@ export class ProjetsController extends Controller {
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
     public async getProjectByID(@Path() projectId: number): Promise<IResponse> {
-        let index = projects.findIndex(x => x.id == projectId);
-
         try {
-            let project = projects[index];
-            return {
-                message: 'OK',
-                status: '200',
-                data: project
-            };
+            let index = projects.findIndex(x => x.id == projectId);
+            if(index != -1) {
+                let project = projects[index];
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: project
+                };
+            } else {
+                throw new Error("Nincs projekt ezzel az ID-val!");
+            }
         } catch(err) {
             this.setStatus(400);
 
             return {
                 message: 'Error',
                 status: '400',
-                data: {
-                    err: err,
-                    msg: 'Nincs projekt ezzel az ID-val!'
-                }
+                data: err.message
             };
         }
     }
@@ -78,27 +85,28 @@ export class ProjetsController extends Controller {
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
     public async getTasksForProject(@Path() projectId: number): Promise<IResponse> {
-        let index = projects.findIndex(x => x.id == projectId);
-
         try {
-            let project = projects[index];
-            let projectTasks = tasks.filter(x => x.project_id == project.id);
+            let index = projects.findIndex(x => x.id == projectId);
 
-            return {
-                message: 'OK',
-                status: '200',
-                data: projectTasks
-            };
+            if(index != -1) {
+                let project = projects[index];
+                let projectTasks = tasks.filter(x => x.project_id == project.id);
+    
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: projectTasks
+                };
+            } else {
+                throw new Error("Nincs projekt ezzel az ID-val!");
+            }
         } catch(err) {
             this.setStatus(400);
 
             return {
                 message: 'Error',
                 status: '400',
-                data: {
-                    err: err,
-                    msg: 'Nincs projekt ezzel az ID-val!'
-                }
+                data: err.message
             };
         }
     }
@@ -108,18 +116,50 @@ export class ProjetsController extends Controller {
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
     public async newTaskForProject(@Path() projectId: number, @Body() body: NewTask): Promise<IResponse> {
-        let index = projects.findIndex(x => x.id == projectId);
-
         try {
-            // Fejleszőhöz hozzákell majd rendelni az adatbázisban a feladatot (Majd a 2.beadandonál)
-            let project = projects[index];
-            let task = { id: Math.random() * 10, name: body.name, description: body.description, project_id: project.id, user_id: body.manager_id, deadline: '2024-04-04' };
-            tasks.push(task);
-            
+            let index = projects.findIndex(x => x.id == projectId);
+            if(index != -1) {
+                // Fejlesztőhöz hozzákell majd rendelni az adatbázisban a feladatot (Majd a 2.beadandonál)
+                let project = projects[index];
+                let task = { 
+                    id: Math.floor(Math.random() * (100 - 10 + 1) + 10), // Random szám 10 és 100 között
+                    name: body.name, 
+                    description: body.description, 
+                    project_id: project.id, 
+                    user_id: body.manager_id, 
+                    deadline: '2024-04-04' 
+                };
+                tasks.push(task);
+                
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: 'Feladat hozzáadva a projekthez!'
+                };
+            } else {
+                throw new Error("Nincs projekt ezzel az ID-val!");
+            }
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err.message
+            };
+        }
+    }
+
+    @Tags('Projects')
+    @Get('/types')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async getProjectTypes(): Promise<IResponse> {
+        try {
             return {
                 message: 'OK',
                 status: '200',
-                data: 'Feladat hozzáadva a projekthez!'
+                data: project_types
             };
         } catch(err) {
             this.setStatus(400);
@@ -127,7 +167,35 @@ export class ProjetsController extends Controller {
             return {
                 message: 'Error',
                 status: '400',
-                data: err
+                data: err.message
+            };
+        }
+    }
+
+    @Tags('Projects')
+    @Get('/types/{typeId}')
+    @SuccessResponse('200', 'OK')
+    @Response<IResponse>('400', 'Bad Request')
+    public async getProjectTypeById(@Path() typeId: number): Promise<IResponse> {
+        try {
+            let index = project_types.findIndex(x => x.id == typeId);
+            if(index != -1) {
+                let project_type = project_types[index];
+                return {
+                    message: 'OK',
+                    status: '200',
+                    data: project_type
+                };
+            } else {
+                throw new Error("Nincs projekt típus ezzel az ID-val!");
+            }
+        } catch(err) {
+            this.setStatus(400);
+
+            return {
+                message: 'Error',
+                status: '400',
+                data: err.message
             };
         }
     }

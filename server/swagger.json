@@ -91,6 +91,22 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"NewDeveloper": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"ProjectDevelopers": {
 				"properties": {
 					"developer_id": {
@@ -430,6 +446,86 @@
 				}
 			}
 		},
+		"/projects/types": {
+			"get": {
+				"operationId": "GetProjectTypes",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Projects"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/projects/types/{typeId}": {
+			"get": {
+				"operationId": "GetProjectTypeById",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Projects"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "typeId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/developers": {
 			"get": {
 				"operationId": "GetDevelopers",
@@ -463,6 +559,96 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/developers/{developerId}": {
+			"get": {
+				"operationId": "GetDeveloperById",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Developers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "developerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/developers/new": {
+			"post": {
+				"operationId": "AddNewDeveloper",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								},
+								"examples": {
+									"Example 1": {}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Developers"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewDeveloper"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/developers/addToProject": {
