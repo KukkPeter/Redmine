@@ -9,34 +9,29 @@
 <body onload="Auth.checkAuth(false)">
     <header class="bg-danger text-white py-4">
       <div class="container d-flex align-items-center">
-        <h1>Redmine</h1>
+        <h1>Redmine</h1><br>
+        <p style="margin-left: auto;">Bejelentkezve, mint <strong id="loggedInUsername"></strong></p>
         <button id="btnLogout" style="margin-left: auto;" class= "btn btn-outline-light">Kijelentkezés</button>
       </div>
     </header>
     
+    <!-- Main -->
     <div class="container mt-5">
       <h2>Projektek</h2>
       <div class="row">
         <div class="col-md-12">
           <div class="btn-group">
             <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              Lista szűrése
+              Lista szűrése típus alapján
             </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" onclick="Main.sortList('0')" href="#">0</a></li>
-              <li><a class="dropdown-item" onclick="Main.sortList('1')" href="#">1</a></li>
-              <li><a class="dropdown-item" onclick="Main.sortList('2')" href="#">2</a></li>
-              <li><a class="dropdown-item" onclick="Main.sortList('3')" href="#">3</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" onclick="Main.resetSort()" href="#">Szűrő visszaállítása</a></li>
-            </ul>
+            <ul class="dropdown-menu" id="sortDropdown"></ul>
           </div>
           <table class="table table-hover">
             <thead>
               <tr>
                 <th>Projekt neve</th>
                 <th>Leírás</th>
-                <th>Típus ID</th>
+                <th>Típus</th>
               </tr>
             </thead>
             <tbody id="project-table"></tbody>
@@ -54,13 +49,14 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" id="taskModalBody">
+            <h3>Feladatok</h3>
             <table class="table">
               <thead>
                 <tr>
                   <th>Feladat neve</th>
                   <th>Leírás</th>
-                  <th>Fejlesztő ID</th>
                   <th>Határidő</th>
+                  <th>Feladat létrehozó</th>
                 </tr>
               </thead>
               <tbody id="tasksTable"></tbody>
@@ -71,6 +67,17 @@
                 Általam létrehozott feladatok
               </label>
             </div>
+            <hr>
+            <h3>Fejlesztők</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Név</th>
+                  <th>Email cím</th>
+                </tr>
+              </thead>
+              <tbody id="developersTable"></tbody>
+            </table>
           </div>
           <div class="modal-footer">
             <span class="d-none" id="projectIDSpan"></span>

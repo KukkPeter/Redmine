@@ -35,6 +35,7 @@ class Authenticator {
               } else {
                 // Sikertelen bejelentkezés
                 alert('Hibás email cím vagy jelszó! Kérlek próbáld újra késöbb.');
+                console.error(data.data);
               }
             });
         }
@@ -48,7 +49,7 @@ class Authenticator {
                 window.location.replace('http://localhost:3000');
             } else {
                 // Sikertelen lekérdezés
-                console.error(data);
+                console.error(data.data);
             }
         });
     }
