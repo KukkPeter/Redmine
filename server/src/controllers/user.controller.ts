@@ -80,6 +80,8 @@ export class UserController extends Controller {
                     status: '200',
                     data: user
                 };
+            } else {
+                throw new Error("Nincs felhasználó ezzel az ID-val!");
             }
         } catch(err) {
             this.setStatus(400);
@@ -106,6 +108,8 @@ export class UserController extends Controller {
                         email: body.email,
                         password: body.password
                     }
+
+                    users.push(user);
 
                     return {
                         message: 'OK',
