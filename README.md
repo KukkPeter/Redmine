@@ -47,11 +47,8 @@ A *beadando1* branch letöltése után parancssorból lehet elindítani a szerve
 Könyvtárak telepítése:
 
 ```
-
 cd server/
-
 npm install
-
 ```
 
   
@@ -67,11 +64,8 @@ Ha ezzel megvagyunk akkor már csak futtatnunk kell a szervert:
   
 
 ```
-
 npm run build
-
 npm run watch
-
 ```
 
   
@@ -91,11 +85,8 @@ Ha fut a szerver akkor a Swagger Dokumentációt elérhetik a [http://localhost:
 Könyvtárak telepítése:
 
 ```
-
 cd client/
-
 npm install
-
 ```
 
   
@@ -103,9 +94,7 @@ npm install
 Kliens futtatása:
 
 ```
-
 npm start
-
 ```
 
   
@@ -114,5 +103,5 @@ A kliens alapjáraton a **3000**-es PORT-ot használja. Ezt itt nyugodtan válto
   
   
 
-Ha futtatjuk a klienst akkor a [http://localhost:3000/](http://localhost:3000/) oldalon elérhetjük azt.
+Ha futtatjuk a klienst akkor a [http://localhost:3000/](http://localhost:3000/) oldalon elérhetjük azt.  
 Belépéshez használják a "*teszt@elek.hu*" email címet a "*tesztelek0*" jelszóval.
