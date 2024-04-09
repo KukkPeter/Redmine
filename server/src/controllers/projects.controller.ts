@@ -11,14 +11,14 @@ let projects = [
 ];
 
 let tasks = [
-    { id: 0, name: 'task0', description: 'description 0', project_id: 0, user_id: 0, deadline: '2024-04-10' },
-    { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 1, deadline: '2024-04-10' },
-    { id: 2, name: 'task2', description: 'description 2', project_id: 1, user_id: 0, deadline: '2024-04-10' },
-    { id: 3, name: 'task3', description: 'description 3', project_id: 1, user_id: 1, deadline: '2024-04-10' },
-    { id: 4, name: 'task4', description: 'description 4', project_id: 2, user_id: 2, deadline: '2024-04-10' },
-    { id: 5, name: 'task5', description: 'description 5', project_id: 2, user_id: 0, deadline: '2024-04-10' },
-    { id: 6, name: 'task6', description: 'description 6', project_id: 3, user_id: 2, deadline: '2024-04-10' },
-    { id: 7, name: 'task7', description: 'description 7', project_id: 3, user_id: 1, deadline: '2024-04-10' },
+    { id: 0, name: 'task0', description: 'description 0', project_id: 0, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
+    { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 1)) },
+    { id: 2, name: 'task2', description: 'description 2', project_id: 1, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 2)) },
+    { id: 3, name: 'task3', description: 'description 3', project_id: 1, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
+    { id: 4, name: 'task4', description: 'description 4', project_id: 2, user_id: 2, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 4)) },
+    { id: 5, name: 'task5', description: 'description 5', project_id: 2, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
+    { id: 6, name: 'task6', description: 'description 6', project_id: 3, user_id: 2, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 8)) },
+    { id: 7, name: 'task7', description: 'description 7', project_id: 3, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
 ];
 
 let project_developers = [
@@ -148,8 +148,7 @@ export class ProjetsController extends Controller {
             if(index != -1) {
                 // Feladat hozzáadása
                 let project = projects[index];
-                let today = new Date(Date.now());
-                today.setHours(23, 59, 59, 0);
+                let today = Date.now() + 1000 * 60 * 60 * 24 * 7; // +7 nap a határidő
 
                 let task = { 
                     id: Math.floor(Math.random() * (100 - 10 + 1) + 10), // Random szám 10 és 100 között
@@ -157,7 +156,7 @@ export class ProjetsController extends Controller {
                     description: body.description, 
                     project_id: project.id, 
                     user_id: body.manager_id, 
-                    deadline: today.toLocaleString()
+                    deadline: today
                 };
                 tasks.push(task);
                 

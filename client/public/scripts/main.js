@@ -77,10 +77,16 @@ class MainPage {
                     API.Get(`/user/${e.user_id}`).then((user_data) => {
                         if(user_data.status == "200") {
                             // Sikeres lekérdezés -- /user/{id}
+                            let deadLine = new Date(e.deadline);
+                            let data = "";
+                            if(deadLine.setHours(0,0,0,0) == new Date().setHours(0,0,0,0)) {
+                                data = ` class="text-danger"`;
+                            }
+                            
                             document.getElementById('tasksTable').innerHTML += `<tr id="task-${e.id}-${e.user_id}">
                                 <td>${e.name}</td>
                                 <td>${e.description}</td>
-                                <td>${e.deadline}</td>
+                                <td${data}>${new Date(e.deadline).toLocaleDateString()}</td>
                                 <td>${user_data.data.name}</td>
                             </tr>`;
                         } else {
