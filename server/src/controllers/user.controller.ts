@@ -2,9 +2,10 @@ import { Route, Get, Post, Body, Controller, SuccessResponse, Tags, Response, Pa
 import { IResponse } from '../interfaces/IResponse.interface';
 import { LoginUser } from '../interfaces/loginUser.interface';
 import { RegisterUser } from '../interfaces/registerUser.interface';
+const db = require('../models');
 
 // Statikus adat
-let users = [
+let userss = [
     { id: 0, name: "Teszt Elek", email: "teszt@elek.hu", password: "tesztelek0"},
     { id: 1, name: "Teszt Tamás", email: "teszt@tamas.hu", password: "teszttamas1"},
     { id: 2, name: "Teszt Béla", email: "teszt@bela.hu", password: "tesztbela2"}
@@ -18,20 +19,24 @@ export class UserController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async loginUser(@Body() body: LoginUser): Promise<IResponse> {
         try {
-            let user = users.find(x => x.email == body.email);
+            const manager = await db.managers.findOne({
+                where: {
+                    email: body.email
+                }
+            });
 
-            if(user) {
-                if(user.password == body.password) {
+            if(manager === null) {
+                throw new Error('Nincs regisztrált felhasználó ezzel az email címmel!');
+            } else {
+                if(manager.password == body.password) {
                     return {
                         message: 'OK',
                         status: '200',
-                        data: user
-                    }
+                        data: manager
+                    };
                 } else {
                     throw new Error('Hibás jelszó!');
                 }
-            } else {
-                throw new Error('Nincs regisztrált felhasználó ezzel az email címmel!');
             }
         } catch(err) {
             this.setStatus(400);
@@ -70,15 +75,13 @@ export class UserController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async getUserById(@Path() userId: number): Promise<IResponse> {
         try {
-            let index = users.findIndex(x => x.id == userId);
+            const manager = await db.managers.findByPk(userId);
 
-            if(index != -1) {
-                let user = users[index];
-                
+            if(manager != null) {                
                 return {
                     message: 'OK',
                     status: '200',
-                    data: user
+                    data: manager
                 };
             } else {
                 throw new Error("Nincs felhasználó ezzel az ID-val!");
@@ -100,16 +103,21 @@ export class UserController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async registerUser(@Body() body: RegisterUser): Promise<IResponse> {
         try {
-            if(users.find(x => x.email == body.email) == undefined) {
+            const manager = await db.managers.findOne({
+                where: {
+                    email: body.email
+                }
+            });
+
+            if(manager != null) {
+                throw new Error("Ez az email cím már regisztrálva van!");
+            } else {
                 if(body.password == body.passwordAgain) {
-                    let user = {
-                        id: users[users.length - 1].id + 1,
+                    const user = await db.managers.create({
                         name: body.name,
                         email: body.email,
                         password: body.password
-                    }
-
-                    users.push(user);
+                    });
 
                     return {
                         message: 'OK',
@@ -117,10 +125,8 @@ export class UserController extends Controller {
                         data: user
                     }
                 } else {
-                    throw new Error("A megadott jelszavak nem egyeznek!")
+                    throw new Error("A megadott jelszavak nem egyeznek!");
                 }
-            } else {
-                throw new Error("Ez az email cím már regisztrálva van!");
             }
         } catch(err) {
             this.setStatus(400);
