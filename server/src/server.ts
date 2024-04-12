@@ -3,7 +3,12 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as swaggerUi from 'swagger-ui-express';
+import * as db from './models/index';
 import { RegisterRoutes } from './routes';
+
+db.sequelize.sync().then(() => {
+    console.log('Database synced.');
+});
 
 dotenv.config();
 const corsOptions = {

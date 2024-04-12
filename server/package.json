@@ -40,6 +40,8 @@
     "express": "^4.19.2",
     "express-validator": "^7.0.1",
     "joi": "^17.12.2",
+    "mysql2": "^3.9.4",
+    "sequelize": "^6.37.2",
     "swagger-ui-express": "^5.0.0",
     "tsoa": "^6.2.0"
   }
