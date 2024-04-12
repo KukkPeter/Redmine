@@ -18,7 +18,8 @@ const sequelize = new Sequelize(
 
 const db = {
     Sequelize: Sequelize,
-    sequelize: sequelize
+    sequelize: sequelize,
+    manager: require('./managers.model')(sequelize, Sequelize)
 };
 
 export = db;
