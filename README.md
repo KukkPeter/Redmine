@@ -6,9 +6,9 @@
 
   
 
-Határidő: *2024. április 10.*
+Határidő: *2024. április 17.  *
 
-Feladat: Szerver - Kliens
+Feladat: Adatbázis, ORM
 
   
 
