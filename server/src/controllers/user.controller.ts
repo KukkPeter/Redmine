@@ -4,12 +4,6 @@ import { LoginUser } from '../interfaces/loginUser.interface';
 import { RegisterUser } from '../interfaces/registerUser.interface';
 const db = require('../models');
 
-// Statikus adat
-let userss = [
-    { id: 0, name: "Teszt Elek", email: "teszt@elek.hu", password: "tesztelek0"},
-    { id: 1, name: "Teszt Tamás", email: "teszt@tamas.hu", password: "teszttamas1"},
-    { id: 2, name: "Teszt Béla", email: "teszt@bela.hu", password: "tesztbela2"}
-];
 
 @Route('/user')
 @Tags('User')
