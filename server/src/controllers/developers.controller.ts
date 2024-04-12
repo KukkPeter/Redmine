@@ -1,13 +1,7 @@
 import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body } from 'tsoa';
 import { IResponse } from '../interfaces/IResponse.interface';
 import { NewDeveloper } from '../interfaces/newDeveloper.interface';
-
-const developers = [
-    { id: 0, name: 'dev 0', email: '0@dev.com' },
-    { id: 1, name: 'dev 1', email: '1@dev.com' },
-    { id: 2, name: 'dev 2', email: '2@dev.com' },
-    { id: 3, name: 'dev 3', email: '3@dev.com' }
-];
+const db = require('../models');
 
 @Route('/developers')
 @Tags('Developers')
@@ -17,6 +11,7 @@ export class DevelopersController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async getDevelopers(): Promise<IResponse> {
         try {
+            const developers = await db.developers.findAll();
             return {
                 message: 'OK',
                 status: '200',
@@ -38,11 +33,9 @@ export class DevelopersController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async getDeveloperById(@Path() developerId: number): Promise<IResponse> {
         try {
-            let index = developers.findIndex(x => x.id == developerId);
+            const developer = await db.developers.findByPk(developerId);
             
-            if(index != -1) {
-                let developer = developers[index];
-
+            if(developer != null) {
                 return {
                     message: 'OK',
                     status: '200',
@@ -67,9 +60,14 @@ export class DevelopersController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async addNewDeveloper(@Body() body: NewDeveloper): Promise<IResponse> {
         try {
-            if(developers.find(x => x.email == body.email) == undefined) {
-                developers.push({
-                    id: Math.floor(Math.random() * (100 - 10 + 1) + 10), // Random szám 10 és 100 között
+            const developer = await db.developers.findOne({
+                where: {
+                    email: body.email
+                }
+            });
+
+            if(developer === null) {
+                const developer = await db.developers.create({
                     email: body.email,
                     name: body.name
                 });
