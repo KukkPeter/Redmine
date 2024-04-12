@@ -6,7 +6,7 @@
 
   
 
-Határidő: *2024. április 17.  *
+Határidő: *2024. április 17.*  
 
 Feladat: Adatbázis, ORM
 
