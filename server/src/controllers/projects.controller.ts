@@ -1,16 +1,17 @@
 import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body } from 'tsoa';
 import { IResponse } from '../interfaces/IResponse.interface';
 import { NewTask } from '../interfaces/newTask.interface';
+const db = require('../models');
 
 // Statikus adat
-let projects = [
+let projectss = [
     { id: 0, name: 'testProject0', type_id: 0, description: 'test Description 0'},
     { id: 1, name: 'testProject1', type_id: 1, description: 'test Description 1'},
     { id: 2, name: 'testProject2', type_id: 2, description: 'test Description 2'},
     { id: 3, name: 'testProject3', type_id: 3, description: 'test Description 3'}
 ];
 
-let tasks = [
+let taskss = [
     { id: 0, name: 'task0', description: 'description 0', project_id: 0, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
     { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 1)) },
     { id: 2, name: 'task2', description: 'description 2', project_id: 1, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 2)) },
@@ -21,7 +22,7 @@ let tasks = [
     { id: 7, name: 'task7', description: 'description 7', project_id: 3, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
 ];
 
-let project_developers = [
+let project_developerss = [
     { developer_id: 0, project_id: 0 }, 
     { developer_id: 1, project_id: 1 }, 
     { developer_id: 2, project_id: 2 }, 
@@ -36,6 +37,7 @@ export class ProjetsController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async getProjects(): Promise<IResponse> {
         try {
+            const projects = await db.projects.findAll();
             return {
                 message: 'OK',
                 status: '200',
@@ -57,16 +59,16 @@ export class ProjetsController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async getProjectByID(@Path() projectId: number): Promise<IResponse> {
         try {
-            let index = projects.findIndex(x => x.id == projectId);
-            if(index != -1) {
-                let project = projects[index];
+            const project = await db.projects.findByPk(projectId);
+
+            if(project === null) {
+                throw new Error("Nincs projekt ezzel az ID-val!");
+            } else {
                 return {
                     message: 'OK',
                     status: '200',
                     data: project
                 };
-            } else {
-                throw new Error("Nincs projekt ezzel az ID-val!");
             }
         } catch(err) {
             this.setStatus(400);
@@ -84,19 +86,20 @@ export class ProjetsController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async getTasksForProject(@Path() projectId: number): Promise<IResponse> {
         try {
-            let index = projects.findIndex(x => x.id == projectId);
+            const { count, rows } = await db.tasks.findAndCountAll({
+                where: {
+                    project_id: projectId
+                }
+            });
 
-            if(index != -1) {
-                let project = projects[index];
-                let projectTasks = tasks.filter(x => x.project_id == project.id);
-    
+            if(count == 0) {
+                throw new Error("Nincs projekt ezzel az ID-val!");
+            } else {    
                 return {
                     message: 'OK',
                     status: '200',
-                    data: projectTasks
+                    data: rows
                 };
-            } else {
-                throw new Error("Nincs projekt ezzel az ID-val!");
             }
         } catch(err) {
             this.setStatus(400);
@@ -109,6 +112,7 @@ export class ProjetsController extends Controller {
         }
     }
 
+    /*
     @Get('/{projectId}/developers')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
@@ -183,4 +187,5 @@ export class ProjetsController extends Controller {
             };
         }
     }
+    */
 }
