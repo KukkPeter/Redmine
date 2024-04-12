@@ -77,16 +77,20 @@ class MainPage {
                     API.Get(`/user/${e.user_id}`).then((user_data) => {
                         if(user_data.status == "200") {
                             // Sikeres lekérdezés -- /user/{id}
-                            let deadLine = new Date(e.deadline);
+                            let deadLine = new Date(parseInt(e.deadline));
                             let data = "";
-                            if(deadLine.setHours(0,0,0,0) == new Date().setHours(0,0,0,0)) {
+                            if(deadLine.setHours(0,0,0,0) < new Date().setHours(0,0,0,0)) {
                                 data = ` class="text-danger"`;
+                            }
+
+                            if(deadLine.setHours(0,0,0,0) == new Date().setHours(0,0,0,0)) {
+                                data = ` class="text-warning"`;
                             }
                             
                             document.getElementById('tasksTable').innerHTML += `<tr id="task-${e.id}-${e.user_id}">
                                 <td>${e.name}</td>
                                 <td>${e.description}</td>
-                                <td${data}>${new Date(e.deadline).toLocaleDateString()}</td>
+                                <td${data}>${new Date(parseInt(e.deadline)).toLocaleDateString()}</td>
                                 <td>${user_data.data.name}</td>
                             </tr>`;
                         } else {
@@ -107,7 +111,7 @@ class MainPage {
             if(data.status == "200") {
                 // Sikeres lekérdezés -- /projects/id/developers
                 data.data.forEach(e => {
-                    API.Get(`/developers/${e.developer_id}`).then((developer_data) => {
+                    API.Get(`/developers/${e.id}`).then((developer_data) => {
                         if(developer_data.status == "200") {
                             // Sikeres lekérdezés -- /developers/{id}
                             document.getElementById('developersTable').innerHTML += `<tr id="developer-${id}-${e.developer_id}">
