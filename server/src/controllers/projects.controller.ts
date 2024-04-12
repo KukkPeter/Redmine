@@ -3,32 +3,6 @@ import { IResponse } from '../interfaces/IResponse.interface';
 import { NewTask } from '../interfaces/newTask.interface';
 const db = require('../models');
 
-// Statikus adat
-let projectss = [
-    { id: 0, name: 'testProject0', type_id: 0, description: 'test Description 0'},
-    { id: 1, name: 'testProject1', type_id: 1, description: 'test Description 1'},
-    { id: 2, name: 'testProject2', type_id: 2, description: 'test Description 2'},
-    { id: 3, name: 'testProject3', type_id: 3, description: 'test Description 3'}
-];
-
-let taskss = [
-    { id: 0, name: 'task0', description: 'description 0', project_id: 0, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
-    { id: 1, name: 'task1', description: 'description 1', project_id: 0, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 1)) },
-    { id: 2, name: 'task2', description: 'description 2', project_id: 1, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 2)) },
-    { id: 3, name: 'task3', description: 'description 3', project_id: 1, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
-    { id: 4, name: 'task4', description: 'description 4', project_id: 2, user_id: 2, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 4)) },
-    { id: 5, name: 'task5', description: 'description 5', project_id: 2, user_id: 0, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
-    { id: 6, name: 'task6', description: 'description 6', project_id: 3, user_id: 2, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 8)) },
-    { id: 7, name: 'task7', description: 'description 7', project_id: 3, user_id: 1, deadline: (Date.now() + (1000 * 60 * 60 * 24 * 0)) },
-];
-
-let project_developerss = [
-    { developer_id: 0, project_id: 0 }, 
-    { developer_id: 1, project_id: 1 }, 
-    { developer_id: 2, project_id: 2 }, 
-    { developer_id: 3, project_id: 3 }
-];
-
 @Route('/projects')
 @Tags('Projects')
 export class ProjetsController extends Controller {
@@ -112,22 +86,23 @@ export class ProjetsController extends Controller {
         }
     }
 
-    /*
     @Get('/{projectId}/developers')
     @SuccessResponse('200', 'OK')
     @Response<IResponse>('400', 'Bad Request')
     public async getDevelopersForProject(@Path() projectId: number): Promise<IResponse> {
         try {
-            let index = projects.findIndex(x => x.id == projectId);
+            const result = await db.projects.findOne({
+                where: {
+                    id: projectId
+                },
+                include: db.developers
+            });
 
-            if(index != -1) {
-                let project = projects[index];
-                let prjctDevelopers = project_developers.filter(x => x.project_id == project.id);
-    
+            if(result != null) {    
                 return {
                     message: 'OK',
                     status: '200',
-                    data: prjctDevelopers
+                    data: result.developers
                 };
             } else {
                 throw new Error("Nincs projekt ezzel az ID-val!");
@@ -148,32 +123,50 @@ export class ProjetsController extends Controller {
     @Response<IResponse>('400', 'Bad Request')
     public async newTaskForProject(@Path() projectId: number, @Body() body: NewTask): Promise<IResponse> {
         try {
-            let index = projects.findIndex(x => x.id == projectId);
-            if(index != -1) {
-                // Feladat hozzáadása
-                let project = projects[index];
-                let today = Date.now() + 1000 * 60 * 60 * 24 * 7; // +7 nap a határidő
+            const project = await db.projects.findOne({
+                where: {
+                    id: projectId
+                },
+                include: db.developers
+            });
 
-                let task = { 
-                    id: Math.floor(Math.random() * (100 - 10 + 1) + 10), // Random szám 10 és 100 között
-                    name: body.name, 
-                    description: body.description, 
-                    project_id: project.id, 
-                    user_id: body.manager_id, 
-                    deadline: today
-                };
-                tasks.push(task);
-                
-                // Fejlesztő hozzáadása a projekthez
-                if(project_developers.find(x => x.developer_id == body.developer_id && x.project_id == projectId) == undefined) {
-                    project_developers.push({ developer_id: body.developer_id, project_id: projectId});
+            const developer = await db.developers.findOne({
+                where: {
+                    id: body.developer_id
                 }
-                
-                return {
-                    message: 'OK',
-                    status: '200',
-                    data: 'Feladat hozzáadva a projekthez!'
-                };
+            });
+
+            const manager = await db.managers.findOne({
+                where: {
+                    id: body.manager_id
+                }
+            });
+
+            if(project != null) {                
+                if(developer != null) {
+                    if(manager != null) {
+                        let today = Date.now() + 1000 * 60 * 60 * 24 * 7; // +7 nap a határidő
+                        const task = await db.tasks.create({
+                            name: body.name,
+                            description: body.description,
+                            project_id: project.id,
+                            user_id: body.manager_id,
+                            deadline: today.toString()
+                        });
+    
+                        await project.addDeveloper(developer);
+    
+                        return {
+                            message: 'OK',
+                            status: '200',
+                            data: "Feladat hozzáadva a projekthez!"
+                        };                    
+                    } else {
+                        throw new Error('Nincs menedzser ezzel az ID-val!');
+                    }
+                } else {
+                    throw new Error('Nincs fejlesztő ezzel az ID-val!');
+                }
             } else {
                 throw new Error("Nincs projekt ezzel az ID-val!");
             }
@@ -186,6 +179,5 @@ export class ProjetsController extends Controller {
                 data: err.message
             };
         }
-    }
-    */
+    } 
 }
