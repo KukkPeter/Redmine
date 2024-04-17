@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2024 at 11:37 AM
+-- Generation Time: Apr 17, 2024 at 12:13 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -213,16 +213,16 @@ CREATE TABLE `tasks` (
 --
 
 INSERT INTO `tasks` (`id`, `name`, `description`, `project_id`, `user_id`, `deadline`, `createdAt`, `updatedAt`) VALUES
-(1, 'Atomi részecskek süritése', 'Sűrűbb legyen a részecskék elhelyezkedése', 4, 2, '0', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
-(2, 'Atomi részecskek programozasa', 'Szinkronban tudjanak mozogni', 4, 2, '0', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
-(3, 'Kormánymű tesztelése', 'Tesztesetek készítése', 2, 3, '0', '2024-03-27 21:29:34', '2024-04-03 21:27:34'),
-(4, 'Mikrokontroller alap szoftver', 'A szoftver legyen fejlesztő képes', 1, 3, '0', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
-(5, 'Kormánymű részletes áttekintése', 'Logfile-ok generálása ', 2, 3, '0', '2024-03-29 21:29:34', '2024-04-05 21:27:34'),
-(6, 'Mikrokontroller kész szoftver', 'A szoftver legyen tesztre kész', 1, 1, '0', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
-(7, 'Prímszámok elemzése', 'Részletesen egyeztetni az alkalmazottak között, hogy mi számít ténylegesen prímszámnak.', 3, 1, '0', '2024-03-28 12:27:31', '2024-04-03 11:11:34'),
-(8, 'Hátvakaró 3D-s megtervezése', 'Legyen minnél kompaktabb és újrahasznosított anyagokból készüljön', 5, 1, '0', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
-(9, 'Hátvakaró 3D nyomtatása', 'Nyomtatás, tesztelés', 5, 2, '0', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
-(10, 'Prím generáló algoritmus készítése', 'generatePrimeNumber() metódus megírása', 3, 2, '0', '2024-03-30 10:27:31', '2024-04-06 06:01:34');
+(1, 'Atomi részecskek süritése', 'Sűrűbb legyen a részecskék elhelyezkedése', 4, 2, '1713341027000', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
+(2, 'Atomi részecskek programozasa', 'Szinkronban tudjanak mozogni', 4, 2, '1716192227000', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
+(3, 'Kormánymű tesztelése', 'Tesztesetek készítése', 2, 3, '1713600227000', '2024-03-27 21:29:34', '2024-04-03 21:27:34'),
+(4, 'Mikrokontroller alap szoftver', 'A szoftver legyen fejlesztő képes', 1, 3, '1713168227000', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
+(5, 'Kormánymű részletes áttekintése', 'Logfile-ok generálása ', 2, 3, '1710925427000', '2024-03-29 21:29:34', '2024-04-05 21:27:34'),
+(6, 'Mikrokontroller kész szoftver', 'A szoftver legyen tesztre kész', 1, 1, '1712736227000', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
+(7, 'Prímszámok elemzése', 'Részletesen egyeztetni az alkalmazottak között, hogy mi számít ténylegesen prímszámnak.', 3, 1, '1713513827000', '2024-03-28 12:27:31', '2024-04-03 11:11:34'),
+(8, 'Hátvakaró 3D-s megtervezése', 'Legyen minnél kompaktabb és újrahasznosított anyagokból készüljön', 5, 1, '1713859427000', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
+(9, 'Hátvakaró 3D nyomtatása', 'Nyomtatás, tesztelés', 5, 2, '1713513827000', '2024-04-12 21:27:34', '2024-04-12 21:27:34'),
+(10, 'Prím generáló algoritmus készítése', 'generatePrimeNumber() metódus megírása', 3, 2, '1712736227000', '2024-03-30 10:27:31', '2024-04-06 06:01:34');
 
 --
 -- Indexes for dumped tables
