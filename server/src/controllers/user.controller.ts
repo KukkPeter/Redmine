@@ -2,8 +2,8 @@ import { Route, Get, Post, Body, Controller, SuccessResponse, Tags, Response, Pa
 import { IResponse } from '../interfaces/IResponse.interface';
 import { LoginUser } from '../interfaces/loginUser.interface';
 import { RegisterUser } from '../interfaces/registerUser.interface';
+import { Crypt } from '../services/crypt.service';
 const db = require('../models');
-
 
 @Route('/user')
 @Tags('User')
@@ -22,7 +22,7 @@ export class UserController extends Controller {
             if(manager === null) {
                 throw new Error('Nincs regisztrált felhasználó ezzel az email címmel!');
             } else {
-                if(manager.password == body.password) {
+                if(await Crypt.compare(body.password, manager.password)) {
                     return {
                         message: 'OK',
                         status: '200',
@@ -107,10 +107,12 @@ export class UserController extends Controller {
                 throw new Error("Ez az email cím már regisztrálva van!");
             } else {
                 if(body.password == body.passwordAgain) {
+                    let encryptedPwd = await Crypt.encrypt(body.password);
+
                     const user = await db.managers.create({
                         name: body.name,
                         email: body.email,
-                        password: body.password
+                        password: encryptedPwd
                     });
 
                     return {

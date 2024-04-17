@@ -1,12 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 12, 2024 at 09:59 PM
--- Server version: 10.4.20-MariaDB
--- PHP Version: 8.0.8
+-- Generation Time: Apr 17, 2024 at 11:37 AM
+-- Server version: 10.4.25-MariaDB
+-- PHP Version: 8.1.10
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -20,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `team_3_redmine`
 --
+CREATE DATABASE IF NOT EXISTS `team_3_redmine` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `team_3_redmine`;
 
 -- --------------------------------------------------------
 
@@ -34,6 +37,10 @@ CREATE TABLE `developers` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `developers`:
+--
 
 --
 -- Dumping data for table `developers`
@@ -63,13 +70,17 @@ CREATE TABLE `managers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
+-- RELATIONSHIPS FOR TABLE `managers`:
+--
+
+--
 -- Dumping data for table `managers`
 --
 
 INSERT INTO `managers` (`id`, `name`, `email`, `password`, `createdAt`, `updatedAt`) VALUES
-(1, 'Teszt Elek', 'teszt@elek.hu', 'tesztelek0', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
-(2, 'Teszt Tamás', 'teszt@tamas.hu', 'teszttamas1', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
-(3, 'Teszt Béla', 'teszt@bela.hu', 'tesztbela2', '2024-04-12 21:08:55', '2024-04-12 21:08:55');
+(1, 'Teszt Elek', 'teszt@elek.hu', '$2b$10$OwN8bCbjYQi45eih/6e9h.mIb1DMd78mEBXkdYziPVbLSP7fyV3ky', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
+(2, 'Teszt Tamás', 'teszt@tamas.hu', '$2b$10$bCebFpysNMgCuLjnNHILw.1SIfEfEHY1xFULYsFaDasufB8QSYrwW', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
+(3, 'Teszt Béla', 'teszt@bela.hu', '$2b$10$PklOPXnOyW4sG2TOFfasBuHNX81p.B5xkqhbJyqHJo3xBQzT0XeLG', '2024-04-12 21:08:55', '2024-04-12 21:08:55');
 
 -- --------------------------------------------------------
 
@@ -85,6 +96,12 @@ CREATE TABLE `projects` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `projects`:
+--   `type_id`
+--       `project_types` -> `id`
+--
 
 --
 -- Dumping data for table `projects`
@@ -109,6 +126,14 @@ CREATE TABLE `project_developers` (
   `developerId` int(11) NOT NULL,
   `projectId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `project_developers`:
+--   `developerId`
+--       `developers` -> `id`
+--   `projectId`
+--       `projects` -> `id`
+--
 
 --
 -- Dumping data for table `project_developers`
@@ -144,6 +169,10 @@ CREATE TABLE `project_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
+-- RELATIONSHIPS FOR TABLE `project_types`:
+--
+
+--
 -- Dumping data for table `project_types`
 --
 
@@ -170,6 +199,14 @@ CREATE TABLE `tasks` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `tasks`:
+--   `project_id`
+--       `projects` -> `id`
+--   `user_id`
+--       `managers` -> `id`
+--
 
 --
 -- Dumping data for table `tasks`
@@ -288,6 +325,7 @@ ALTER TABLE `project_developers`
 ALTER TABLE `tasks`
   ADD CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `managers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
