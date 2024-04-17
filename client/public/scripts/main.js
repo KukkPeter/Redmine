@@ -2,7 +2,7 @@ import API from './api.js';
 
 class MainPage {
     constructor() {
-        this.showOwnTasks = false;
+        $('#btnCheck').attr("showOwnTasks", false);
     }
 
     loadProjects() {
@@ -56,7 +56,7 @@ class MainPage {
         document.getElementById('projectIDSpan').innerHTML = id;
 
         document.getElementById('btnCheck').checked = false;
-        this.showOwnTasks = false;
+        $('#btnCheck').attr("showOwnTasks", false);
 
         // Cím betöltése
         API.Get(`/projects/${id}`).then((data) => {
@@ -202,8 +202,8 @@ class MainPage {
         let userId = JSON.parse(localStorage.getItem('user')).id;
         let table = document.getElementById('tasksTable');
       
-        if(this.showOwnTasks) {
-            this.showOwnTasks = false;
+        if($('#btnCheck').attr('showOwnTasks') == 'true') {
+            $('#btnCheck').attr('showOwnTasks', false);
             for (var i = 0, row; row = table.rows[i]; i++) {
                 for (var j = 0, col; col = row.cells[j]; j++) {
                     if(j == 2 && row.id.split('-')[2] != userId) {
@@ -212,7 +212,7 @@ class MainPage {
                 }  
             }
         } else {
-            this.showOwnTasks = true;
+            $('#btnCheck').attr('showOwnTasks', true);
             for (var i = 0, row; row = table.rows[i]; i++) {
                 for (var j = 0, col; col = row.cells[j]; j++) {
                     if(j == 2 && row.id.split('-')[2] != userId) {
