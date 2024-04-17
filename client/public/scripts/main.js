@@ -80,11 +80,11 @@ class MainPage {
                             let deadLine = new Date(parseInt(e.deadline));
                             let data = "";
                             if(deadLine.setHours(0,0,0,0) < new Date().setHours(0,0,0,0)) {
-                                data = ` class="text-danger"`;
+                                data = ` class="bg-danger text-white"`;
                             }
 
                             if(deadLine.setHours(0,0,0,0) == new Date().setHours(0,0,0,0)) {
-                                data = ` class="text-warning"`;
+                                data = ` class="bg-warning"`;
                             }
                             
                             document.getElementById('tasksTable').innerHTML += `<tr id="task-${e.id}-${e.user_id}">

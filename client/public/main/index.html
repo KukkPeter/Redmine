@@ -9,9 +9,9 @@
 <body onload="Auth.checkAuth(false)">
     <header class="bg-danger text-white py-4">
       <div class="container d-flex align-items-center">
-        <h1>Redmine</h1><br>
-        <p style="margin-left: auto;">Bejelentkezve, mint <strong id="loggedInUsername"></strong></p>
-        <button id="btnLogout" style="margin-left: auto;" class= "btn btn-outline-light">Kijelentkezés</button>
+        <h1>Redmine</h1>
+        <p class="m-auto">Bejelentkezve, mint <strong id="loggedInUsername"></strong></p>
+        <button id="btnLogout" class= "btn btn-outline-light">Kijelentkezés</button>
       </div>
     </header>
     
@@ -49,12 +49,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" id="taskModalBody">
-            <h3>Feladatok</h3>
+            <h3 class="mb-3">Feladatok</h3>
             <p>A <span class="text-warning">sárgával</span> jelzett feladatok a mai napon lejárnak!</p>
             <p>A <span class="text-danger">pirossal</span> jelzett feladatok lejártak!</p>
             <table class="table">
               <thead>
-                <tr>
+                <tr class="text-nowrap">
                   <th>Feladat neve</th>
                   <th>Leírás</th>
                   <th>Határidő</th>
