@@ -5,6 +5,7 @@ import * as cors from 'cors';
 import * as swaggerUi from 'swagger-ui-express';
 import * as db from './models/index';
 import { RegisterRoutes } from './routes';
+import { errorHandler } from './middlewares/errorHandler';
 
 db.sequelize.sync().then(() => {
     console.log('Database synced.');
@@ -28,6 +29,9 @@ app.use(bodyParser.json());
 let http = require('http').Server(app);
 
 RegisterRoutes(app);
+
+app.use(errorHandler);
+
 try {
     const swaggerDocument = require('../swagger.json');
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

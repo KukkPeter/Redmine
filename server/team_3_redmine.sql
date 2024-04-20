@@ -1,13 +1,12 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2024 at 12:13 PM
--- Server version: 10.4.25-MariaDB
--- PHP Version: 8.1.10
+-- Generation Time: Apr 19, 2024 at 08:48 PM
+-- Server version: 10.4.20-MariaDB
+-- PHP Version: 8.0.8
 
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -39,10 +38,6 @@ CREATE TABLE `developers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- RELATIONSHIPS FOR TABLE `developers`:
---
-
---
 -- Dumping data for table `developers`
 --
 
@@ -65,22 +60,19 @@ CREATE TABLE `managers` (
   `name` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
+  `roles` varchar(255) NOT NULL DEFAULT 'manager',
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- RELATIONSHIPS FOR TABLE `managers`:
---
-
---
 -- Dumping data for table `managers`
 --
 
-INSERT INTO `managers` (`id`, `name`, `email`, `password`, `createdAt`, `updatedAt`) VALUES
-(1, 'Teszt Elek', 'teszt@elek.hu', '$2b$10$OwN8bCbjYQi45eih/6e9h.mIb1DMd78mEBXkdYziPVbLSP7fyV3ky', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
-(2, 'Teszt Tamás', 'teszt@tamas.hu', '$2b$10$bCebFpysNMgCuLjnNHILw.1SIfEfEHY1xFULYsFaDasufB8QSYrwW', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
-(3, 'Teszt Béla', 'teszt@bela.hu', '$2b$10$PklOPXnOyW4sG2TOFfasBuHNX81p.B5xkqhbJyqHJo3xBQzT0XeLG', '2024-04-12 21:08:55', '2024-04-12 21:08:55');
+INSERT INTO `managers` (`id`, `name`, `email`, `password`, `roles`, `createdAt`, `updatedAt`) VALUES
+(1, 'Teszt Elek', 'teszt@elek.hu', '$2b$10$OwN8bCbjYQi45eih/6e9h.mIb1DMd78mEBXkdYziPVbLSP7fyV3ky', 'manager', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
+(2, 'Teszt Tamás', 'teszt@tamas.hu', '$2b$10$bCebFpysNMgCuLjnNHILw.1SIfEfEHY1xFULYsFaDasufB8QSYrwW', 'manager', '2024-04-12 21:08:55', '2024-04-12 21:08:55'),
+(3, 'Teszt Béla', 'teszt@bela.hu', '$2b$10$PklOPXnOyW4sG2TOFfasBuHNX81p.B5xkqhbJyqHJo3xBQzT0XeLG', 'manager|admin', '2024-04-12 21:08:55', '2024-04-12 21:08:55');
 
 -- --------------------------------------------------------
 
@@ -96,12 +88,6 @@ CREATE TABLE `projects` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONSHIPS FOR TABLE `projects`:
---   `type_id`
---       `project_types` -> `id`
---
 
 --
 -- Dumping data for table `projects`
@@ -128,14 +114,6 @@ CREATE TABLE `project_developers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- RELATIONSHIPS FOR TABLE `project_developers`:
---   `developerId`
---       `developers` -> `id`
---   `projectId`
---       `projects` -> `id`
---
-
---
 -- Dumping data for table `project_developers`
 --
 
@@ -151,6 +129,7 @@ INSERT INTO `project_developers` (`createdAt`, `updatedAt`, `developerId`, `proj
 ('2024-04-12 21:58:23', '2024-04-12 21:58:23', 4, 1),
 ('2024-04-12 21:58:23', '2024-04-12 21:58:23', 4, 3),
 ('2024-04-12 21:56:54', '2024-04-12 21:56:54', 4, 5),
+('2024-04-12 21:56:54', '2024-04-12 21:56:54', 5, 1),
 ('2024-04-12 21:56:54', '2024-04-12 21:56:54', 5, 5),
 ('2024-04-12 21:56:54', '2024-04-12 21:56:54', 6, 1),
 ('2024-04-12 21:56:54', '2024-04-12 21:56:54', 6, 4);
@@ -167,10 +146,6 @@ CREATE TABLE `project_types` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONSHIPS FOR TABLE `project_types`:
---
 
 --
 -- Dumping data for table `project_types`
@@ -199,14 +174,6 @@ CREATE TABLE `tasks` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONSHIPS FOR TABLE `tasks`:
---   `project_id`
---       `projects` -> `id`
---   `user_id`
---       `managers` -> `id`
---
 
 --
 -- Dumping data for table `tasks`
@@ -276,31 +243,31 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `developers`
 --
 ALTER TABLE `developers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `managers`
 --
 ALTER TABLE `managers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `project_types`
 --
 ALTER TABLE `project_types`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
@@ -325,7 +292,6 @@ ALTER TABLE `project_developers`
 ALTER TABLE `tasks`
   ADD CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `managers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

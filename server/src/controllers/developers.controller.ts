@@ -1,93 +1,70 @@
-import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body } from 'tsoa';
+import { Route, Get, Post, Delete, Path, Controller, SuccessResponse, Tags, Body, Security } from 'tsoa';
 import { IResponse } from '../interfaces/IResponse.interface';
 import { NewDeveloper } from '../interfaces/newDeveloper.interface';
-const db = require('../models');
+import DevelopersService from '../services/developers.service';
 
 @Route('/developers')
 @Tags('Developers')
+@SuccessResponse(200, 'OK')
 export class DevelopersController extends Controller {
+    /**
+     * Visszaadja a rendszerben tárolt fejlesztőket.
+     */
     @Get('/')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt')
     public async getDevelopers(): Promise<IResponse> {
-        try {
-            const developers = await db.developers.findAll();
-            return {
-                message: 'OK',
-                status: '200',
-                data: developers
-            };
-        } catch(err) {
-            this.setStatus(400);
+        const developers = await DevelopersService.getAll();
 
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        return {
+            status: 200,
+            message: "OK",
+            data: developers
+        };
     }
 
+    /**
+     * Visszaadja a megadott developerId alapján a rendszerben tárolt fejlesztőt, feltéve hogy létezik a megadott ID-val fejlesztő.
+     */
     @Get('/{developerId}')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt')
     public async getDeveloperById(@Path() developerId: number): Promise<IResponse> {
-        try {
-            const developer = await db.developers.findByPk(developerId);
-            
-            if(developer != null) {
-                return {
-                    message: 'OK',
-                    status: '200',
-                    data: developer
-                };
-            } else {
-                throw new Error("Nincs fejlesztó ezzel az ID-val!");
-            }
-        } catch(err) {
-            this.setStatus(400);
+        const developer = await DevelopersService.getById(developerId);
 
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        return {
+            status: 200,
+            message: "OK",
+            data: developer
+        };
     }
 
+    /**
+     * Új fejlesztőt ad hozzá a rendszerhez. Adminisztrátori jogosultság szükséges!
+     */
     @Post('/new')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt', ["admin"])
     public async addNewDeveloper(@Body() body: NewDeveloper): Promise<IResponse> {
-        try {
-            const developer = await db.developers.findOne({
-                where: {
-                    email: body.email
-                }
-            });
+        const developer = await DevelopersService.addNew(body);
 
-            if(developer === null) {
-                const developer = await db.developers.create({
-                    email: body.email,
-                    name: body.name
-                });
-
-                return {
-                    message: 'OK',
-                    status: '200',
-                    data: 'Fejlesztő hozzáadva!'
-                };
-            } else {
-                throw new Error("Ezzel az email címmel már van fejlesztő!");
-            }
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        return {
+            status: 200,
+            message: "Fejlesztő sikeresen hozzáadva!",
+            data: developer
+        };
     }
+
+    /**
+     * Fejlesztőt töröl a rendszerből. Adminisztrátori jogosultság szükséges!
+     */
+    @Delete('/{developerId}')
+    @Security('jwt', ["admin"])
+    public async deleteDeveloperById(@Path() developerId: number): Promise<IResponse> {
+        const response = await DevelopersService.deleteById(developerId);
+
+        return {
+            status: 200,
+            message: "Fejlesztő törölve!",
+            data: response
+        };
+    }
+
 }

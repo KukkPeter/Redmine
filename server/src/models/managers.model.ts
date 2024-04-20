@@ -8,6 +8,10 @@ export = (sequelize: any, Sequelize: any) => {
         },
         password:{
             type:Sequelize.STRING
+        },
+        roles: {
+            type:Sequelize.STRING,
+            defaultValue: "manager"
         }
     });
 

@@ -1,183 +1,130 @@
-import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Response, Body } from 'tsoa';
+import { Route, Get, Post, Path, Controller, SuccessResponse, Tags, Security, Body, Delete } from 'tsoa';
 import { IResponse } from '../interfaces/IResponse.interface';
 import { NewTask } from '../interfaces/newTask.interface';
-const db = require('../models');
+import { NewProject } from '../interfaces/newProject.interface';
+import ProjectsService from '../services/projects.service';
 
 @Route('/projects')
 @Tags('Projects')
+@SuccessResponse(200, 'OK')
 export class ProjetsController extends Controller {
+    /**
+     * Visszaadja a rendszerben tárolt projekteket.
+     */
     @Get('/')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt')
     public async getProjects(): Promise<IResponse> {
-        try {
-            const projects = await db.projects.findAll();
-            return {
-                message: 'OK',
-                status: '200',
-                data: projects
-            };
-        } catch(err) {
-            this.setStatus(400);
+        const projects = await ProjectsService.getAll();
 
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        return {
+            status: 200,
+            message: "OK",
+            data: projects
+        };
     }
 
+    /**
+     * Új projektet ad hozzá a rendszerhez. Adminisztrátori jogosultság szükséges!
+     */
+    @Post('/new')
+    @Security('jwt', ["admin"])
+    public async newProject(@Body() body: NewProject): Promise<IResponse> {
+        const project = await ProjectsService.newProject(body);
+
+        return {
+            status: 200,
+            message: "Projekt felvéve!",
+            data: project
+        };
+    }
+
+    /**
+     * Visszaadja a megadott projectId alapján a rendszerben tárolt projektet, feltéve hogy létezik a megadott ID-val projekt.
+     */
     @Get('/{projectId}')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt')
     public async getProjectByID(@Path() projectId: number): Promise<IResponse> {
-        try {
-            const project = await db.projects.findByPk(projectId);
+        const project = await ProjectsService.getById(projectId);
 
-            if(project === null) {
-                throw new Error("Nincs projekt ezzel az ID-val!");
-            } else {
-                return {
-                    message: 'OK',
-                    status: '200',
-                    data: project
-                };
-            }
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        return {
+            status: 200,
+            message: "OK",
+            data: project
+        };
     }
 
+    /**
+     * Projekt törlése a rendszerből. Adminisztrátori jogosultság szükséges!
+     */
+    @Delete('/{projectId}')
+    @Security('jwt', ["admin"])
+    public async deleteProjectByID(@Path() projectId: number): Promise<IResponse> {
+        const project = await ProjectsService.deleteById(projectId);
+
+        return {
+            status: 200,
+            message: "A projekt és a hozzátartozó feladatok törölve!",
+            data: "A projekt és a hozzátartozó feladatok törölve!"
+        };
+    }
+
+    /**
+     * Visszaadja a megadott projectId alapján a rendszerben tárolt projekthez tartozó feladatokat, feltéve hogy létezik a megadott ID-val projekt.
+     */
     @Get('/{projectId}/tasks')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt')
     public async getTasksForProject(@Path() projectId: number): Promise<IResponse> {
-        try {
-            const { count, rows } = await db.tasks.findAndCountAll({
-                where: {
-                    project_id: projectId
-                }
-            });
-
-            if(count == 0) {
-                throw new Error("Nincs projekt ezzel az ID-val!");
-            } else {    
-                return {
-                    message: 'OK',
-                    status: '200',
-                    data: rows
-                };
-            }
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        const tasks = await ProjectsService.getTasks(projectId);
+        
+        return {
+            status: 200,
+            message: "OK",
+            data: tasks
+        };
     }
 
+    /**
+     * Visszaadja a megadott projectId alapján a rendszerben tárolt projekthez tartozó fejlesztőket, feltéve hogy létezik a megadott ID-val projekt.
+     */
     @Get('/{projectId}/developers')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt')
     public async getDevelopersForProject(@Path() projectId: number): Promise<IResponse> {
-        try {
-            const result = await db.projects.findOne({
-                where: {
-                    id: projectId
-                },
-                include: db.developers
-            });
+        const developers = await ProjectsService.getDevelopers(projectId);
 
-            if(result != null) {    
-                return {
-                    message: 'OK',
-                    status: '200',
-                    data: result.developers
-                };
-            } else {
-                throw new Error("Nincs projekt ezzel az ID-val!");
-            }
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        return {
+            status: 200,
+            message: "OK",
+            data: developers
+        };
     }
 
+    /**
+     * A projectId alapján új feladatot ad hozzá a projekthez, feltéve hogy létezik projekt a projectId-ban megadott ID-val.
+     */
     @Post('/{projectId}/newTask')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
+    @Security('jwt')
     public async newTaskForProject(@Path() projectId: number, @Body() body: NewTask): Promise<IResponse> {
-        try {
-            const project = await db.projects.findOne({
-                where: {
-                    id: projectId
-                },
-                include: db.developers
-            });
+        const task = await ProjectsService.newTask(projectId, body);
 
-            const developer = await db.developers.findOne({
-                where: {
-                    id: body.developer_id
-                }
-            });
-
-            const manager = await db.managers.findOne({
-                where: {
-                    id: body.manager_id
-                }
-            });
-
-            if(project != null) {                
-                if(developer != null) {
-                    if(manager != null) {
-                        let today = Date.now() + 1000 * 60 * 60 * 24 * 7; // +7 nap a határidő
-                        const task = await db.tasks.create({
-                            name: body.name,
-                            description: body.description,
-                            project_id: project.id,
-                            user_id: body.manager_id,
-                            deadline: today.toString()
-                        });
-    
-                        await project.addDeveloper(developer);
-    
-                        return {
-                            message: 'OK',
-                            status: '200',
-                            data: "Feladat hozzáadva a projekthez!"
-                        };                    
-                    } else {
-                        throw new Error('Nincs menedzser ezzel az ID-val!');
-                    }
-                } else {
-                    throw new Error('Nincs fejlesztő ezzel az ID-val!');
-                }
-            } else {
-                throw new Error("Nincs projekt ezzel az ID-val!");
-            }
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        return {
+            status: 200,
+            message: "Feladat és fejlesztő hozzáadva a projekthez!",
+            data: task
+        };
     } 
+
+    /**
+     * Feladat törlése a rendszerből. Adminisztrátori jogosultság szükséges!
+     */
+    @Delete('deleteTask/{taskId}')
+    @Security('jwt', ["admin"]) 
+    public async deleteTaskById(@Path() taskId: number): Promise<IResponse> {
+        const response = await ProjectsService.deleteTask(taskId);
+
+        return {
+            status: 200,
+            message: "Feladat törölve!",
+            data: "Feladat törölve!"
+        };
+    }
 }

@@ -1,137 +1,79 @@
-import { Route, Get, Post, Body, Controller, SuccessResponse, Tags, Response, Path } from 'tsoa';
+import { Request, Security, Route, Get, Post, Body, Controller, SuccessResponse, Tags, Path } from 'tsoa';
 import { IResponse } from '../interfaces/IResponse.interface';
 import { LoginUser } from '../interfaces/loginUser.interface';
 import { RegisterUser } from '../interfaces/registerUser.interface';
-import { Crypt } from '../services/crypt.service';
-const db = require('../models');
+import UserService from '../services/user.service';
 
 @Route('/user')
 @Tags('User')
+@SuccessResponse(200, "OK")
 export class UserController extends Controller {
+    /**
+     * Bejelentkezés során megkell adni egy email címet ami regisztrálva van a rendszerben és egy hozzá tartozó jelszót.
+     */
     @Post('/login')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
     public async loginUser(@Body() body: LoginUser): Promise<IResponse> {
-        try {
-            const manager = await db.managers.findOne({
-                where: {
-                    email: body.email
-                }
-            });
-
-            if(manager === null) {
-                throw new Error('Nincs regisztrált felhasználó ezzel az email címmel!');
-            } else {
-                if(await Crypt.compare(body.password, manager.password)) {
-                    return {
-                        message: 'OK',
-                        status: '200',
-                        data: manager
-                    };
-                } else {
-                    throw new Error('Hibás jelszó!');
-                }
-            }
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
+        const token = await UserService.login(body);
+        return {
+            status: 200,
+            message: "Sikeres bejelentkezés!",
+            data: token
+        };
     }
 
-    @Post('/logout')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
-    public async logoutUser(): Promise<IResponse> {
-        try {
-            return {
-                message: 'OK',
-                status: '200',
-                data: 'Kijelentkezve'
-            };
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
-    }
-
-    @Get('/{userId}')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
-    public async getUserById(@Path() userId: number): Promise<IResponse> {
-        try {
-            const manager = await db.managers.findByPk(userId);
-
-            if(manager != null) {                
-                return {
-                    message: 'OK',
-                    status: '200',
-                    data: manager
-                };
-            } else {
-                throw new Error("Nincs felhasználó ezzel az ID-val!");
-            }
-        } catch(err) {
-            this.setStatus(400);
-
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
-        }
-
-    }
-
+    /**
+     * Regisztráció során megkell adni egy email címet ami még nincs regisztrálva a rendszerben, egy nevet illetve egy jelszót és a hozzá tartozó jelszó megerősítőt.
+     */
     @Post('/register')
-    @SuccessResponse('200', 'OK')
-    @Response<IResponse>('400', 'Bad Request')
     public async registerUser(@Body() body: RegisterUser): Promise<IResponse> {
-        try {
-            const manager = await db.managers.findOne({
-                where: {
-                    email: body.email
-                }
-            });
+        const manager = await UserService.register(body);
 
-            if(manager != null) {
-                throw new Error("Ez az email cím már regisztrálva van!");
-            } else {
-                if(body.password == body.passwordAgain) {
-                    let encryptedPwd = await Crypt.encrypt(body.password);
+        return {
+            status: 200,
+            message: "Sikeres regisztráció! Mostmár betudsz jelentkezni.",
+            data: manager
+        }
+    }
 
-                    const user = await db.managers.create({
-                        name: body.name,
-                        email: body.email,
-                        password: encryptedPwd
-                    });
+    /**
+     * Kijelentkezés a rendszerből.
+     */
+    @Post('/logout')
+    @Security('jwt')
+    public async logoutUser(): Promise<IResponse> {
+        return {
+            status: 200,
+            message: 'OK',
+            data: 'Sikeres kijelentkezés!'
+        };
+    }
 
-                    return {
-                        message: 'OK',
-                        status: '200',
-                        data: user
-                    }
-                } else {
-                    throw new Error("A megadott jelszavak nem egyeznek!");
-                }
-            }
-        } catch(err) {
-            this.setStatus(400);
+    /**
+     * A headerben megadott JsonWebToken-ből vissza adja a felhasználót.
+     */
+    @Get('/myself')
+    @Security('jwt')
+    public async getMyself(@Request() request: any): Promise<IResponse> {
+        const user = await UserService.getUserFromToken(request.user);
 
-            return {
-                message: 'Error',
-                status: '400',
-                data: err.message
-            };
+        return {
+            status: 200,
+            message: "OK",
+            data: user
+        };
+    }
+
+    /**
+     * A megadott userId alapján kikeresi a rendszerben tárolt felhasználót, feltéve hogy létezik ilyen ID-val felhasználó.
+     */
+    @Get('/{userId}')
+    @Security('jwt')
+    public async getUserById(@Path() userId: number): Promise<IResponse> {
+        const userById = await UserService.getById(userId);
+        return {
+            status: 200,
+            message: "OK",
+            data: userById
         }
     }
 }

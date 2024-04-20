@@ -13,7 +13,8 @@
 						"type": "string"
 					},
 					"status": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"data": {}
 				},
@@ -65,6 +66,39 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"NewType": {
+				"properties": {
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"NewProject": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"type_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"description",
+					"type_id"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"NewTask": {
 				"properties": {
 					"name": {
@@ -108,11 +142,17 @@
 				"additionalProperties": true
 			}
 		},
-		"securitySchemes": {}
+		"securitySchemes": {
+			"jwt": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
 	},
 	"info": {
 		"title": "redmine-server",
-		"version": "Beadando#1",
+		"version": "Beadando#3",
 		"description": "Redmine - 3. Csapat",
 		"license": {
 			"name": "GPL-3.0"
@@ -128,29 +168,17 @@
 				"operationId": "LoginUser",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Bejelentkezés során megkell adni egy email címet ami regisztrálva van a rendszerben és egy hozzá tartozó jelszót.",
 				"tags": [
 					"User"
 				],
@@ -168,114 +196,22 @@
 				}
 			}
 		},
-		"/user/logout": {
-			"post": {
-				"operationId": "LogoutUser",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [],
-				"parameters": []
-			}
-		},
-		"/user/{userId}": {
-			"get": {
-				"operationId": "GetUserById",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
 		"/user/register": {
 			"post": {
 				"operationId": "RegisterUser",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Regisztráció során megkell adni egy email címet ami még nincs regisztrálva a rendszerben, egy nevet illetve egy jelszót és a hozzá tartozó jelszó megerősítőt.",
 				"tags": [
 					"User"
 				],
@@ -293,39 +229,121 @@
 				}
 			}
 		},
-		"/types": {
-			"get": {
-				"operationId": "GetProjectTypes",
+		"/user/logout": {
+			"post": {
+				"operationId": "LogoutUser",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Kijelentkezés a rendszerből.",
 				"tags": [
-					"Projects",
+					"User"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/user/myself": {
+			"get": {
+				"operationId": "GetMyself",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "A headerben megadott JsonWebToken-ből vissza adja a felhasználót.",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/user/{userId}": {
+			"get": {
+				"operationId": "GetUserById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "A megadott userId alapján kikeresi a rendszerben tárolt felhasználót, feltéve hogy létezik ilyen ID-val felhasználó.",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/types": {
+			"get": {
+				"operationId": "GetProjectTypes",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Visszaadja a rendszerben tárolt projekt típusokat.",
+				"tags": [
 					"Types"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": []
 			}
 		},
@@ -334,34 +352,62 @@
 				"operationId": "GetProjectTypeById",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Visszaadja a megadott typeId alapján a rendszerben tárolt projekt típust, feltéve hogy létezik a megadott ID-val projekt típus.",
 				"tags": [
-					"Projects",
 					"Types"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "typeId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteTypeById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Projekt típust töröl a rendszerből. Adminisztrátori jogosultság szükséges!",
+				"tags": [
+					"Types"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -375,39 +421,109 @@
 				]
 			}
 		},
-		"/projects": {
-			"get": {
-				"operationId": "GetProjects",
+		"/types/new": {
+			"post": {
+				"operationId": "NewProjectType",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Új projekt típust ad hozzá a rendszerhez. Adminisztrátori jogosultság szükséges!",
+				"tags": [
+					"Types"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewType"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/projects": {
+			"get": {
+				"operationId": "GetProjects",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Visszaadja a rendszerben tárolt projekteket.",
 				"tags": [
 					"Projects"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": []
+			}
+		},
+		"/projects/new": {
+			"post": {
+				"operationId": "NewProject",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Új projektet ad hozzá a rendszerhez. Adminisztrátori jogosultság szükséges!",
+				"tags": [
+					"Projects"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewProject"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/projects/{projectId}": {
@@ -415,33 +531,62 @@
 				"operationId": "GetProjectByID",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Visszaadja a megadott projectId alapján a rendszerben tárolt projektet, feltéve hogy létezik a megadott ID-val projekt.",
 				"tags": [
 					"Projects"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteProjectByID",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Projekt törlése a rendszerből. Adminisztrátori jogosultság szükséges!",
+				"tags": [
+					"Projects"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -460,33 +605,25 @@
 				"operationId": "GetTasksForProject",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Visszaadja a megadott projectId alapján a rendszerben tárolt projekthez tartozó feladatokat, feltéve hogy létezik a megadott ID-val projekt.",
 				"tags": [
 					"Projects"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -505,33 +642,25 @@
 				"operationId": "GetDevelopersForProject",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Visszaadja a megadott projectId alapján a rendszerben tárolt projekthez tartozó fejlesztőket, feltéve hogy létezik a megadott ID-val projekt.",
 				"tags": [
 					"Projects"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -550,33 +679,25 @@
 				"operationId": "NewTaskForProject",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "A projectId alapján új feladatot ad hozzá a projekthez, feltéve hogy létezik projekt a projectId-ban megadott ID-val.",
 				"tags": [
 					"Projects"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -600,38 +721,69 @@
 				}
 			}
 		},
-		"/developers": {
-			"get": {
-				"operationId": "GetDevelopers",
+		"/projects/deleteTask/{taskId}": {
+			"delete": {
+				"operationId": "DeleteTaskById",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Feladat törlése a rendszerből. Adminisztrátori jogosultság szükséges!",
+				"tags": [
+					"Projects"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "taskId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/developers": {
+			"get": {
+				"operationId": "GetDevelopers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Visszaadja a rendszerben tárolt fejlesztőket.",
 				"tags": [
 					"Developers"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": []
 			}
 		},
@@ -640,33 +792,62 @@
 				"operationId": "GetDeveloperById",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Visszaadja a megadott developerId alapján a rendszerben tárolt fejlesztőt, feltéve hogy létezik a megadott ID-val fejlesztő.",
 				"tags": [
 					"Developers"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "developerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteDeveloperById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Fejlesztőt töröl a rendszerből. Adminisztrátori jogosultság szükséges!",
+				"tags": [
+					"Developers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -685,33 +866,27 @@
 				"operationId": "AddNewDeveloper",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Bad Request",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								},
-								"examples": {
-									"Example 1": {}
 								}
 							}
 						}
 					}
 				},
+				"description": "Új fejlesztőt ad hozzá a rendszerhez. Adminisztrátori jogosultság szükséges!",
 				"tags": [
 					"Developers"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
