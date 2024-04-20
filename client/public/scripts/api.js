@@ -21,7 +21,13 @@ class API {
       $('#myToast').toast('show');
     }
 
+    async checkTimeout() {
+      // TODO: megkell nézni hogy a token érvényes-e még, ha igen: akkor semmi, ha nem: vissza a bejelentkezésre
+    }
+
     async Post(url = "", data = {}) {
+      await this.checkTimeout();
+
       let headers = {
         "Content-Type": "application/json",
       };
@@ -54,6 +60,8 @@ class API {
     }
 
     async Get(url = "") {
+      await this.checkTimeout();
+
       let headers = {
         "Content-Type": "application/json",
       };
@@ -84,6 +92,8 @@ class API {
     }
 
     async Delete(url = "") {
+      await this.checkTimeout();
+
       let headers = {
         "Content-Type": "application/json",
       };

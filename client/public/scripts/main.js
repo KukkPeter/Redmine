@@ -4,8 +4,97 @@ class MainPage {
     constructor() {
         $('#btnCheck').attr("showOwnTasks", false);
     }
+    
+    deleteProject(projectId) {
+        API.Delete(`/projects/${projectId}`).then(res => {
+            // Sikeres lekérdezés
+            API.ShowToast(res.message, 'success');
+            this.loadProjects();
+        }).catch(err => {
+            // Sikertelen lekérdezés
+            console.error(err);
+        });
+    }
+
+    deleteTask(projectId, taskID) {
+        API.Delete(`/projects/deleteTask/${taskID}`).then(res => {
+            // Sikeres lekérdezés
+            API.ShowToast(res.message, 'success');
+            this.selectProject(projectId);
+        }).catch(err => {
+            // Sikertelen lekérdezés
+            console.error(err);
+        });
+    }
+
+    NewProject() {
+        let name = document.getElementById('newProjectName').value;
+        let desc = document.getElementById('newProjectDesc').value;
+        let typeId = document.getElementById('typesSelectList').value;
+
+        if(!name || !desc || !typeId || typeId == "Válassz típust") {
+            API.ShowToast('Kérlek töltsd ki az összes mezőt!', 'warning');
+        } else {
+            API.Post('/projects/new', { name: name, description: desc, type_id: typeId }).then(res => {
+                // Sikeres lekérdezés
+                $('#newProjectModal').modal('hide');
+
+                API.ShowToast(res.message, 'success');
+
+                window.Main.loadProjects();
+            }).catch(err => {
+                // Sikertelen lekérdezés
+                API.ShowToast(err.data, 'warning');
+                console.error(err);
+            })
+        }
+    }
+
+    NewDeveloper() {
+        let name = document.getElementById('newDevName').value;
+        let email = document.getElementById('newDevEmail').value;
+        let regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+        if(!email || !name) {
+            API.ShowToast('Kérlek töltsd ki az összes mezőt!', 'warning');
+        } else if(!email.match(regex)) {
+            API.ShowToast('Hibás email cím!', 'danger');
+        } else {
+            API.Post('/developers/new', { name: name, email: email }).then(res => {
+                // Sikeres lekérdezés
+                $('#newDevModal').modal('hide');
+
+                API.ShowToast(res.message, 'success');
+            }).catch(err => {
+                // Sikertelen lekérdezés
+                API.ShowToast(err.data, 'warning');
+                console.error(err);
+            });
+        }
+    }
+
+    NewType() {
+        let name = $('#newTypeName').val();
+        
+        if(!name) {
+            API.ShowToast('Kérlek töltsd ki az összes mezőt!', 'warning');
+        } else {
+            API.Post('/types/new', { name: name }).then(res => {
+                // Sikeres lekérdezés
+                $('#newTypeModal').modal('hide');
+
+                API.ShowToast(res.message, 'success');
+            }).catch(err => {
+                // Sikertelen lekérdezés
+                API.ShowToast(err.data, 'warning');
+                console.error(err);
+            });
+        }
+    }
 
     loadProjects() {
+        $('#project-table').html("");
+
         API.Get('/projects').then(res => {
             // Sikeres lekérdezés
             API.Get('/types').then(types_res => {
@@ -18,39 +107,36 @@ class MainPage {
                 document.getElementById('sortDropdown').innerHTML += `<li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" onclick="Main.resetSort()" href="#">Szűrő visszaállítása</a></li>`;
 
-                // Tábla feltöltése
-                res.data.forEach(e => {
-                    let type = types_res.data.find(x => x.id == e.type_id);
+                API.Get('/user/myself').then(res_self => {
+                    // Sikeres lekérdezés
 
-                    if(type) {
-                        document.getElementById('project-table').innerHTML += `<tr onclick="Main.selectProject(${e.id})" style="cursor: pointer;" id="project-${e.id}">
-                            <td>${e.name}</td>
-                            <td>${e.description}</td>
-                            <td>${type.name}</td>
-                        </tr>`;
-                    } else {
-                        document.getElementById('project-table').innerHTML += `<tr onclick="Main.selectProject(${e.id})" style="cursor: pointer;" id="project-${e.id}">
-                            <td>${e.name}</td>
-                            <td>${e.description}</td>
-                            <td>${e.type_id}</td>
-                        </tr>`;
-                    }    
-                });
+                    // Tábla feltöltése
+                    res.data.forEach(e => {
+                        let type = types_res.data.find(x => x.id == e.type_id);
+    
+                        if(type) {
+                            document.getElementById('project-table').innerHTML += `<tr style="cursor: pointer;" id="project-${e.id}">
+                                <td onclick="Main.selectProject(${e.id})">${e.name}</td>
+                                <td onclick="Main.selectProject(${e.id})">${e.description}</td>
+                                <td onclick="Main.selectProject(${e.id})">${type.name}</td>
+                                ${res_self.data.roles.includes('admin')? `<td class="text-center"><button type="button" id="rm-project-${e.id}" onclick="Main.deleteProject(${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>`:``}
+                            </tr>`;
+                        } else {
+                            document.getElementById('project-table').innerHTML += `<tr onclick="Main.selectProject(${e.id})" style="cursor: pointer;" id="project-${e.id}">
+                                <td>${e.name}</td>
+                                <td>${e.description}</td>
+                                <td>Hiba(${e.type_id})</td>
+                            </tr>`;
+                        }    
+                    });
+                }).catch(err => {
+                    // Sikertelen lekérdezés
+                    console.error(err);
+                })
             }).catch(err => {
                 // Sikertelen lekérdezés
                 console.error(err);
             });
-        }).catch(err => {
-            // Sikertelen lekérdezés
-            console.error(err);
-        });
-    }
-
-    deleteTask(projectId, taskID) {
-        API.Delete(`/projects/deleteTask/${taskID}`).then(res => {
-            // Sikeres lekérdezés
-            API.ShowToast(res.message, 'success');
-            this.selectProject(projectId);
         }).catch(err => {
             // Sikertelen lekérdezés
             console.error(err);
@@ -107,7 +193,6 @@ class MainPage {
                     console.error(err);
                 });
             });
-            $('#taskModal').modal('show');
         }).catch(err => {
             // Sikertelen lekérdezés
             console.error(err);
@@ -132,6 +217,8 @@ class MainPage {
             // Sikertelen lekérdezés -- /projects/id/developers
             console.error(err);
         });
+
+        $('#taskModal').modal('show');
     }
 
     loadDevelopersList() {
@@ -236,14 +323,52 @@ class MainPage {
 (function() {
     window.Main = new MainPage();
     window.API = API;
-    // "Bejelentkezve, mint ..." szöveg feltöltése
+
+    // ADMIN CHECK & Welcome text
     API.Get('/user/myself').then(res => {
         // Sikeres lekérdezés
+        
+        // "Bejelentkezve, mint ..." szöveg feltöltése
         document.getElementById('loggedInUsername').innerHTML = res.data.name;
 
         if(res.data.roles.includes('admin')) {
+            // Információs szöveg
             document.getElementById('loggedInUser').innerHTML += "<br>Adminisztrátori jogosultsággal rendelkezzel!";
+
+            // Új projekt hozzáadása
+            document.getElementById('btnNewProject').addEventListener('click', function() {
+                $('#newProjectName').val("");
+                $('#newProjectDesc').val("");
+                document.getElementById('typesSelectList').innerHTML = "<option selected>Válassz típust</option>";
+                API.Get('/types').then(res => {
+                    // Sikeres lekérdezés
+                    res.data.forEach(e => {
+                        document.getElementById('typesSelectList').innerHTML += `<option value="${e.id}">${e.name}</option>`
+                    });       
+                    $('#newProjectModal').modal('show');
+                }).catch(err => {
+                    // Sikertelen lekérdezés
+                    console.error(err);
+                });
+            });
+            document.getElementById('btnAddNewProject').addEventListener('click', window.Main.NewProject);
+
+            // Új fejlesztő hozzáadása
+            document.getElementById('btnNewDev').addEventListener('click', function() {
+                $('#newDevName').val("");
+                $('#newDevEmail').val("");
+                $('#newDevModal').modal('show');
+            });
+            document.getElementById('btnAddNewDev').addEventListener('click', window.Main.NewDeveloper);
+
+            // Új típus hozzáadása
+            document.getElementById('btnNewType').addEventListener('click', function() {
+                $('#newTypeName').val("");
+                $('#newTypeModal').modal('show');
+            });
+            document.getElementById('btnAddNewType').addEventListener('click', window.Main.NewType);
         } else {
+            // Ha nem admin, akkor minden admin related dolog törlése a frontendről.
             document.querySelectorAll('.admin').forEach(e => {
                 e.remove();
             });
