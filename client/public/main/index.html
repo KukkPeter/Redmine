@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redmine</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="shortcut icon" href="../icon.png" type="image/png">
 </head>
 <body onload="Auth.checkAuth(false)">
@@ -12,7 +13,7 @@
       <div class="container d-flex align-items-center">
         <img src="../icon.png" class="rounded me-2" width="50"  alt="">
         <h1>Redmine</h1>
-        <p class="m-auto">Bejelentkezve, mint <strong id="loggedInUsername"></strong></p>
+        <p class="m-auto" id="loggedInUser">Bejelentkezve, mint <strong id="loggedInUsername"></strong>!</p>
         <button id="btnLogout" class= "btn btn-outline-light">Kijelentkezés</button>
       </div>
     </header>
@@ -28,7 +29,7 @@
             </button>
             <ul class="dropdown-menu" id="sortDropdown"></ul>
           </div>
-          <table class="table table-hover">
+          <table class="table table-hover table-responsive-md">
             <thead>
               <tr>
                 <th>Projekt neve</th>
@@ -50,7 +51,7 @@
             <h1 class="modal-title fs-5" id="taskModalTitle">Feladatok</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body" id="taskModalBody">
+          <div class="modal-body table-responsive-xl" id="taskModalBody">
             <h3 class="mb-3">Feladatok</h3>
             <p>A <span class="text-warning">sárgával</span> jelzett feladatok a mai napon lejárnak!</p>
             <p>A <span class="text-danger">pirossal</span> jelzett feladatok lejártak!</p>
@@ -61,6 +62,7 @@
                   <th>Leírás</th>
                   <th>Határidő</th>
                   <th>Feladat létrehozó</th>
+                  <th class="admin">Műveletek</th>
                 </tr>
               </thead>
               <tbody id="tasksTable"></tbody>

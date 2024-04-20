@@ -46,6 +46,17 @@ class MainPage {
         });
     }
 
+    deleteTask(projectId, taskID) {
+        API.Delete(`/projects/deleteTask/${taskID}`).then(res => {
+            // Sikeres lekérdezés
+            API.ShowToast(res.message, 'success');
+            this.selectProject(projectId);
+        }).catch(err => {
+            // Sikertelen lekérdezés
+            console.error(err);
+        });
+    }
+
     selectProject(id) {
         document.getElementById('tasksTable').innerHTML = "";
         document.getElementById('developersTable').innerHTML = "";
@@ -78,13 +89,19 @@ class MainPage {
                     if(deadLine.setHours(0,0,0,0) == new Date().setHours(0,0,0,0)) {
                         data = ` class="bg-warning"`;
                     }
+
+                    API.Get('/user/myself').then(res_self => {
+                        document.getElementById('tasksTable').innerHTML += `<tr id="task-${e.id}-${e.user_id}">
+                            <td>${e.name}</td>
+                            <td>${e.description}</td>
+                            <td${data}>${new Date(parseInt(e.deadline)).toLocaleDateString()}</td>
+                            <td>${res_user.data.name}</td>
+                            ${res_self.data.roles.includes('admin')? `<td class="text-center"><button type="button" id="rm-task-${e.id}-${e.user_id}" onclick="Main.deleteTask(${id}, ${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>`:``}
+                        </tr>`;
+                    }).catch(err => {
+                        console.error(err);
+                    });
                     
-                    document.getElementById('tasksTable').innerHTML += `<tr id="task-${e.id}-${e.user_id}">
-                        <td>${e.name}</td>
-                        <td>${e.description}</td>
-                        <td${data}>${new Date(parseInt(e.deadline)).toLocaleDateString()}</td>
-                        <td>${res_user.data.name}</td>
-                    </tr>`;
                 }).catch(err => {
                     // Sikertelen lekérdezés
                     console.error(err);
@@ -145,7 +162,7 @@ class MainPage {
                 // Sikeres lekérdezés
                 API.Post(`/projects/${projectId}/newTask`, { name: name, description: desc, developer_id: devID, manager_id: res_self.data.id }).then(res => {
                     // Sikeres lekérdezés
-                    API.Toast(res.message, 'success');
+                    API.ShowToast(res.message, 'success');
     
                     $('#newTaskModal').modal('hide');
                     document.getElementById('newTaskName').value = "";
@@ -223,6 +240,14 @@ class MainPage {
     API.Get('/user/myself').then(res => {
         // Sikeres lekérdezés
         document.getElementById('loggedInUsername').innerHTML = res.data.name;
+
+        if(res.data.roles.includes('admin')) {
+            document.getElementById('loggedInUser').innerHTML += "<br>Adminisztrátori jogosultsággal rendelkezzel!";
+        } else {
+            document.querySelectorAll('.admin').forEach(e => {
+                e.remove();
+            });
+        }
     }).catch(err => {
         // Sikertelen lekérdezés
         console.log(err);

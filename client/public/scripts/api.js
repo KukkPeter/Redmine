@@ -64,7 +64,12 @@ class API {
 
       return new Promise(async (resolve, reject) => {
         const response = await fetch(this.Server + url, {
-          headers: headers
+          mode: "cors",
+          cache: "no-cache",
+          credentials: "same-origin",
+          headers: headers,
+          redirect: "follow",
+          referrerPolicy: "no-referrer"
         });
 
         response.json().then(data => {
@@ -95,8 +100,7 @@ class API {
           credentials: "same-origin",
           headers: headers,
           redirect: "follow",
-          referrerPolicy: "no-referrer",
-          body: JSON.stringify(data),
+          referrerPolicy: "no-referrer"
         });
         
         response.json().then(data => {
