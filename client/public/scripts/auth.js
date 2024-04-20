@@ -44,7 +44,38 @@ class Authenticator {
                 window.location.replace('http://localhost:3000/main');
             }).catch(error => {
                 // Sikertelen bejelentkezés
-                API.ShowToast('Hibás email cím vagy jelszó! Kérlek próbáld újra késöbb.', 'danger');
+                API.ShowToast(error.message, 'danger');
+                console.error(error);
+            });
+        }
+    }
+
+    register() {
+        let name = $('#floatingInputName').val();
+        let email = $('#floatingInputEmail').val();
+        let pwd = $('#floatingPassword').val();
+        let pwdAgain = $('#floatingPasswordAgain').val();
+
+        let regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+        if(!name || !email || !pwd || !pwdAgain) {
+            API.ShowToast('Nem adtál meg valamilyen adatot!', 'danger');
+        } else if(!email.match(regex)) {
+            API.ShowToast('Hibás email cím!', 'danger');
+        } else if(pwd != pwdAgain) {
+            API.ShowToast('A jelszó és a jelszó megerősítő nem egyezik!', 'danger');
+        } else {
+            API.Post("/user/register", { name: name, email: email, password: pwd, passwordAgain: pwdAgain }).then(res => {
+                // Sikeres lekérdezés                        
+                API.ShowToast(res.message, 'success');
+                
+                $('#floatingInputName').val("");
+                $('#floatingInputEmail').val("");
+                $('#floatingPassword').val("");
+                $('#floatingPasswordAgain').val("");
+            }).catch(error => {
+                // Sikertelen lekérdezés
+                API.ShowToast(error.message, 'danger');
                 console.error(error);
             });
         }
