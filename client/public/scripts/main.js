@@ -73,6 +73,19 @@ class MainPage {
         }
     }
 
+    deleteDeveloper(id) {
+        API.Delete(`/developers/${id}`,).then(res => {
+            // Sikeres lekérdezés
+            $('#deleteDevModal').modal('hide');
+
+            API.ShowToast(res.message, 'success');
+        }).catch(err => {
+            // Sikertelen lekérdezés
+            API.ShowToast(err.data, 'warning');
+            console.error(err);
+        });
+    }
+
     NewType() {
         let name = $('#newTypeName').val();
         
@@ -83,6 +96,8 @@ class MainPage {
                 // Sikeres lekérdezés
                 $('#newTypeModal').modal('hide');
 
+                window.Main.resetProjectSort();
+
                 API.ShowToast(res.message, 'success');
             }).catch(err => {
                 // Sikertelen lekérdezés
@@ -92,20 +107,29 @@ class MainPage {
         }
     }
 
+    deleteType(id) {
+        API.Delete(`/types/${id}`,).then(res => {
+            // Sikeres lekérdezés
+            $('#deleteTypeModal').modal('hide');
+
+            window.Main.resetProjectSort();
+
+            API.ShowToast(res.message, 'success');
+        }).catch(err => {
+            // Sikertelen lekérdezés
+            API.ShowToast(err.data, 'warning');
+            console.error(err);
+        });
+    }
+
     loadProjects() {
         $('#project-table').html("");
+        this.resetProjectSort();
 
         API.Get('/projects').then(res => {
             // Sikeres lekérdezés
             API.Get('/types').then(types_res => {
                 // Sikeres lekérdezés
-
-                // Szűrő feltöltése
-                types_res.data.forEach(e => {
-                    document.getElementById('sortDropdown').innerHTML += `<li><a class="dropdown-item" onclick="Main.sortList('${e.name}')" href="#">${e.name}</a></li>`;
-                });
-                document.getElementById('sortDropdown').innerHTML += `<li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" onclick="Main.resetSort()" href="#">Szűrő visszaállítása</a></li>`;
 
                 API.Get('/user/myself').then(res_self => {
                     // Sikeres lekérdezés
@@ -119,7 +143,7 @@ class MainPage {
                                 <td onclick="Main.selectProject(${e.id})">${e.name}</td>
                                 <td onclick="Main.selectProject(${e.id})">${e.description}</td>
                                 <td onclick="Main.selectProject(${e.id})">${type.name}</td>
-                                ${res_self.data.roles.includes('admin')? `<td class="text-center"><button type="button" id="rm-project-${e.id}" onclick="Main.deleteProject(${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>`:``}
+                                ${res_self.data.manager.roles.includes('admin')? `<td class="text-center"><button type="button" id="rm-project-${e.id}" onclick="Main.deleteProject(${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>`:``}
                             </tr>`;
                         } else {
                             document.getElementById('project-table').innerHTML += `<tr onclick="Main.selectProject(${e.id})" style="cursor: pointer;" id="project-${e.id}">
@@ -137,6 +161,21 @@ class MainPage {
                 // Sikertelen lekérdezés
                 console.error(err);
             });
+        }).catch(err => {
+            // Sikertelen lekérdezés
+            console.error(err);
+        });
+    }
+
+    resetProjectSort() {
+        $('#sortDropdown').html("");
+        API.Get('/types').then(types_res => {
+            // Sikeres lekérdezés
+            types_res.data.forEach(e => {
+                document.getElementById('sortDropdown').innerHTML += `<li><a class="dropdown-item" onclick="Main.sortList('${e.name}')" href="#">${e.name}</a></li>`;
+            });
+            document.getElementById('sortDropdown').innerHTML += `<li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" onclick="Main.resetSort()" href="#">Szűrő visszaállítása</a></li>`;
         }).catch(err => {
             // Sikertelen lekérdezés
             console.error(err);
@@ -182,7 +221,7 @@ class MainPage {
                             <td>${e.description}</td>
                             <td${data}>${new Date(parseInt(e.deadline)).toLocaleDateString()}</td>
                             <td>${res_user.data.name}</td>
-                            ${res_self.data.roles.includes('admin')? `<td class="text-center"><button type="button" id="rm-task-${e.id}-${e.user_id}" onclick="Main.deleteTask(${id}, ${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>`:``}
+                            ${res_self.data.manager.roles.includes('admin')? `<td class="text-center"><button type="button" id="rm-task-${e.id}-${e.user_id}" onclick="Main.deleteTask(${id}, ${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>`:``}
                         </tr>`;
                     }).catch(err => {
                         console.error(err);
@@ -247,7 +286,7 @@ class MainPage {
         } else {
             API.Get('/user/myself').then(res_self => {
                 // Sikeres lekérdezés
-                API.Post(`/projects/${projectId}/newTask`, { name: name, description: desc, developer_id: devID, manager_id: res_self.data.id }).then(res => {
+                API.Post(`/projects/${projectId}/newTask`, { name: name, description: desc, developer_id: devID, manager_id: res_self.data.manager.id }).then(res => {
                     // Sikeres lekérdezés
                     API.ShowToast(res.message, 'success');
     
@@ -291,7 +330,7 @@ class MainPage {
     sortTasks() {
         API.Get('/user/myself').then(res => {
             // Sikeres lekérdezés
-            let userId = res.data.id;
+            let userId = res.data.manager.id;
             let table = document.getElementById('tasksTable');
 
             if($('#btnCheck').attr('showOwnTasks') == 'true') {
@@ -322,16 +361,15 @@ class MainPage {
 
 (function() {
     window.Main = new MainPage();
-    window.API = API;
 
     // ADMIN CHECK & Welcome text
     API.Get('/user/myself').then(res => {
         // Sikeres lekérdezés
         
         // "Bejelentkezve, mint ..." szöveg feltöltése
-        document.getElementById('loggedInUsername').innerHTML = res.data.name;
+        document.getElementById('loggedInUsername').innerHTML = res.data.manager.name;
 
-        if(res.data.roles.includes('admin')) {
+        if(res.data.manager.roles.includes('admin')) {
             // Információs szöveg
             document.getElementById('loggedInUser').innerHTML += "<br>Adminisztrátori jogosultsággal rendelkezzel!";
 
@@ -361,12 +399,55 @@ class MainPage {
             });
             document.getElementById('btnAddNewDev').addEventListener('click', window.Main.NewDeveloper);
 
+            // Fejlesztő törlése
+            document.getElementById('btnDeleteDev').addEventListener('click', function() {
+                API.Get('/developers').then(res => {
+                    // Sikeres lekérdezés
+                    $('#deleteDevTable').html("");
+
+                    res.data.forEach(e => {
+                        document.getElementById('deleteDevTable').innerHTML+=`<tr>
+                            <td>${e.id}</td>
+                            <td>${e.name}</td>
+                            <td>${e.email}</td>
+                            <td class="text-center"><button type="button" id="rm-type-${e.id}" onclick="Main.deleteDeveloper(${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>
+                        </tr>`;
+                    });
+
+                    $('#deleteDevModal').modal('show');
+                }).catch(err => {
+                    // Sikertelen lekérdezés
+                    console.error(err);
+                });
+            });
+
             // Új típus hozzáadása
             document.getElementById('btnNewType').addEventListener('click', function() {
                 $('#newTypeName').val("");
                 $('#newTypeModal').modal('show');
             });
             document.getElementById('btnAddNewType').addEventListener('click', window.Main.NewType);
+
+            // Típus törlése
+            document.getElementById('btnDeleteType').addEventListener('click', function() {
+                API.Get('/types').then(res => {
+                    // Sikeres lekérdezés
+                    $('#deleteTypeTable').html("");
+
+                    res.data.forEach(e => {
+                        document.getElementById('deleteTypeTable').innerHTML+=`<tr>
+                            <td>${e.id}</td>
+                            <td>${e.name}</td>
+                            <td class="text-center"><button type="button" id="rm-type-${e.id}" onclick="Main.deleteType(${e.id})" class="btn btn-danger"><i class="bi bi-trash"></i></button></td>
+                        </tr>`;
+                    });
+
+                    $('#deleteTypeModal').modal('show');
+                }).catch(err => {
+                    // Sikertelen lekérdezés
+                    console.error(err);
+                });
+            });
         } else {
             // Ha nem admin, akkor minden admin related dolog törlése a frontendről.
             document.querySelectorAll('.admin').forEach(e => {

@@ -68,8 +68,11 @@ class UserService {
             
             if(manager != null) {
                 manager.roles = manager.roles.split('|');
-                
-                return manager;
+
+                return { 
+                    manager, 
+                    tokenExperation: user.exp 
+                };
             } else {
                 throw new Error("A bejelentkezett felhasználó nem létezik!");
             }

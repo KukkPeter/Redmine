@@ -43,9 +43,15 @@
         </div>
       </div>
       <div class="row admin">
+        <hr>
         <button class="btn btn-outline-success mb-2" id="btnNewProject">Új projekt felvétele</button>
+        <hr>
         <button class="btn btn-outline-success mb-2" id="btnNewDev">Új fejlesztő felvétele</button>
+        <button class="btn btn-outline-danger mb-2" id="btnDeleteDev">Fejlesztő törlése</button>
+        <hr>
         <button class="btn btn-outline-success mb-2" id="btnNewType">Új típus felvétele</button>
+        <button class="btn btn-outline-danger mb-2" id="btnDeleteType">Típus törlése</button>
+        <hr>
     </div>
     </div>
 
@@ -186,6 +192,33 @@
       </div>
     </div>
 
+    <div class="modal fade admin" id="deleteDevModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteDevModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="deleteDevModalTitle">Fejlesztő törlése</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="deleteDevModalBody">
+            <table class="table">
+              <thead>
+                <tr class="text-nowrap">
+                  <th>ID</th>
+                  <th>Fejlesztő neve</th>
+                  <th>Fejlesztő email címe</th>
+                  <th>Műveletek</th>
+                </tr>
+              </thead>
+              <tbody id="deleteDevTable"></tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Mégse</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade admin" id="newTypeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newTypeModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -202,6 +235,32 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Mégse</button>
             <button type="button" class="btn btn-success" id="btnAddNewType">Hozzáadás</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade admin" id="deleteTypeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteTypeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="deleteTypeModalTitle">Projekt típus törlése</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="deleteTypeModalBody">
+            <table class="table">
+              <thead>
+                <tr class="text-nowrap">
+                  <th>ID</th>
+                  <th>Projekt típus neve</th>
+                  <th>Műveletek</th>
+                </tr>
+              </thead>
+              <tbody id="deleteTypeTable"></tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Mégse</button>
           </div>
         </div>
       </div>

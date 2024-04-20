@@ -1,6 +1,6 @@
 class API {
     constructor(link = "http://localhost:8000") {
-        this.Server = link;
+      this.Server = link;
     }
 
     async ShowToast(text, style = "primary") {
@@ -23,6 +23,15 @@ class API {
 
     async checkTimeout() {
       // TODO: megkell nézni hogy a token érvényes-e még, ha igen: akkor semmi, ha nem: vissza a bejelentkezésre
+      let timeStamp = localStorage.getItem('tokenExperation');
+      let diff = parseInt(timeStamp) - Date.now();
+      if(diff < 10) {
+        localStorage.clear();
+        window.location.href="http://localhost:3000/#tokenExpired";
+      } else {
+        // TOKEN VALID
+        //console.info("%cTOKEN VALID", 'color: #32a852');
+      }
     }
 
     async Post(url = "", data = {}) {

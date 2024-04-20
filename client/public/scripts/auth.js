@@ -10,6 +10,8 @@ class Authenticator {
             } else {
                 if(location.href.split('#')[1] == "logout") {
                     API.ShowToast("Sikeres kijelentkezés!", "success");
+                } else if(location.href.split('#')[1] == "tokenExpired") {
+                    API.ShowToast("Lejárt a munkameneted! Jelentkezz be újra a folytatáshoz.", "warning");
                 }
             }
         } else {
@@ -18,7 +20,8 @@ class Authenticator {
             }
             API.Get('/user/myself').then(res => {
                 // Sikeres lekérdezés
-                API.ShowToast(`Sikeresen bejelentkezve, mint <strong>${res.data.name}</strong>!`, "success");
+                localStorage.setItem('tokenExperation', res.data.tokenExperation.toString() + "000");
+                API.ShowToast(`Sikeresen bejelentkezve, mint <strong>${res.data.manager.name}</strong>!`, "success");
             }).catch(err => {
                 // Sikertelen lekérdezés
                 console.err(err);
@@ -37,9 +40,7 @@ class Authenticator {
             API.ShowToast('Hibás email cím!', 'danger');
         } else {
             API.Post("/user/login", { email: email, password: password }).then(res => {
-                // Sikeres bejelentkezés
-                console.log(res);
-                        
+                // Sikeres bejelentkezés                        
                 localStorage.setItem('token', res.data.toString());
                 window.location.replace('http://localhost:3000/main');
             }).catch(error => {
