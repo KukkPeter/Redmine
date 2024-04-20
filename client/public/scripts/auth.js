@@ -5,11 +5,11 @@ class Authenticator {
 
     checkAuth(loginPage = false) {
         if(loginPage) {
-            if(localStorage.getItem('user') != null) {
+            if(localStorage.getItem('token') != null) {
                 window.location.replace('http://localhost:3000/main');
             }
         } else {
-            if(localStorage.getItem('user') == null) {
+            if(localStorage.getItem('token') == null) {
                 window.location.replace('http://localhost:3000/');
             }
         }
@@ -25,32 +25,27 @@ class Authenticator {
         } else if(!email.match(regex)) {
             alert('Hibás email cím!');
         } else {
-            API.Post("/user/login", { email: email, password: password }).then((data) => {
-              if(data.status == "200") {
+            API.Post("/user/login", { email: email, password: password }).then(res => {
                 // Sikeres bejelentkezés
-                alert('Sikeres bejelentkezés!');
-          
-                localStorage.setItem('user', JSON.stringify(data.data));
+                alert(res.message);
+                console.log(res);
+                        
+                localStorage.setItem('token', res.data.toString());
                 window.location.replace('http://localhost:3000/main');
-              } else {
+            }).catch(error => {
                 // Sikertelen bejelentkezés
                 alert('Hibás email cím vagy jelszó! Kérlek próbáld újra késöbb.');
-                console.error(data.data);
-              }
+                console.error(error);
             });
         }
     }
 
     logout() {
-        API.Post('/user/logout').then((data) => {
-            if(data.status=="200") {
-                // Sikeres lekérdezés
-                localStorage.clear();
-                window.location.replace('http://localhost:3000');
-            } else {
-                // Sikertelen lekérdezés
-                console.error(data.data);
-            }
+        API.Post('/user/logout').then(res => {
+            localStorage.clear();window.location.replace('http://localhost:3000');
+            alert(res.message);
+        }).catch(error => {
+            console.error(error);
         });
     }
 }

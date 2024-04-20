@@ -43,7 +43,7 @@ export class UserController extends Controller {
     public async logoutUser(): Promise<IResponse> {
         return {
             status: 200,
-            message: 'OK',
+            message: "Sikeres kijelentkezés!",
             data: 'Sikeres kijelentkezés!'
         };
     }
