@@ -13,6 +13,10 @@
           <h1 class="h3 mb-3 fw-normal text-center">Regisztráció</h1>
 
           <div class="form-floating">
+            <input type="password" class="form-control" id="floatingInput" placeholder="Név">
+            <label for="floatingPassword">Név</label>
+          </div>
+          <div class="form-floating">
             <input type="email" class="form-control" id="floatingInput" placeholder="név@valami.com">
             <label for="floatingInput">Email cím</label>
           </div>
@@ -22,7 +26,7 @@
           </div>
           <div class="form-floating">
             <input type="password" class="form-control" id="floatingPasswordAgain" placeholder="Jelszó újra">
-            <label for="floatingPassword">Jelszó</label>
+            <label for="floatingPassword">Jelszó újra</label>
           </div>
 
           <button class="btn btn-primary w-100 py-2" type="button" onclick="Auth.register()">Regisztráció</button>
