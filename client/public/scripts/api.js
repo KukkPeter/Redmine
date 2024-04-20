@@ -3,6 +3,24 @@ class API {
         this.Server = link;
     }
 
+    async ShowToast(text, style = "primary") {
+      let toast = `<div class="toast text-bg-${style}" role="alert" id="myToast" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <img src="http://localhost:3000/icon.png" class="rounded me-2" alt="Redmine Icon" width="20">
+          <strong class="me-auto">Redmine</strong>
+          <small>3-as Csapat</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          ${text}
+        </div>
+      </div>`;
+
+      $('#toastContainer').html(toast);
+
+      $('#myToast').toast('show');
+    }
+
     async Post(url = "", data = {}) {
       let headers = {
         "Content-Type": "application/json",
@@ -28,6 +46,7 @@ class API {
           if(data.status == 200) {
             return resolve(data);
           } else {
+            this.ShowToast('Hiba történt a művelet során! Hiba kód a consoleban.', 'danger');
             return reject(data);
           }
         }); 
@@ -50,9 +69,10 @@ class API {
 
         response.json().then(data => {
           if(data.status == 200) {
-            resolve(data);
+            return resolve(data);
           } else {
-            reject(data);
+            this.ShowToast('Hiba történt a művelet során! Hiba kód a consoleban.', 'danger');
+            return reject(data);
           }
         })
       });
@@ -83,6 +103,7 @@ class API {
           if(data.status == 200) {
             return resolve(data);
           } else {
+            this.ShowToast('Hiba történt a művelet során! Hiba kód a consoleban.', 'danger');
             return reject(data);
           }
         }); 

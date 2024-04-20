@@ -139,13 +139,13 @@ class MainPage {
         let devID = document.getElementById('developersSelectList').value;
 
         if(!name || !desc || !devID) {
-            alert('Kérlek töltsd ki az összes mezőt!');
+            API.ShowToast('Kérlek töltsd ki az összes mezőt!', 'warning');
         } else {
             API.Get('/user/myself').then(res_self => {
                 // Sikeres lekérdezés
                 API.Post(`/projects/${projectId}/newTask`, { name: name, description: desc, developer_id: devID, manager_id: res_self.data.id }).then(res => {
                     // Sikeres lekérdezés
-                    alert(res.message);
+                    API.Toast(res.message, 'success');
     
                     $('#newTaskModal').modal('hide');
                     document.getElementById('newTaskName').value = "";
@@ -218,7 +218,7 @@ class MainPage {
 
 (function() {
     window.Main = new MainPage();
-
+    window.API = API;
     // "Bejelentkezve, mint ..." szöveg feltöltése
     API.Get('/user/myself').then(res => {
         // Sikeres lekérdezés
