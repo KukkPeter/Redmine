@@ -89,7 +89,7 @@ class ProjectsService {
             });
 
             if(count == 0) {
-                throw new Error("Nincs projekt ezzel az ID-val!");
+                return [];
             } else {    
                 return rows;
             }
