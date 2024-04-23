@@ -27,7 +27,7 @@ Ez az SQL fájl automatikusan létrehozza a *team_3_redmine* nevű adatbázist a
   
 ## Telepítés  
 
-A *beadando1* branch letöltése után parancssorból lehet elindítani a szervert és a klienst külön-külön.  
+A *beadando3* branch letöltése után parancssorból lehet elindítani a szervert és a klienst külön-külön.  
   
 **Szerver**  
 Könyvtárak telepítése:  
@@ -47,6 +47,9 @@ npm run watch
   
 **!!FONTOS!!**    
 A szervert ne futassuk amíg az adatbázis nincs elindítva illetve nincsen beimportálva a *team_3_redmine.sql* fájl! 
+
+Illetve változás áll fent az adatbázison belül az adatbázis sémában:
+- A "*managers*" tábla kibővült egy *roles* adattaggal úgyhogy a sikeres futtatás érdekében, ha nincs *roles* adattagunk az adatbázisban akkor importáljuk be újra a *team_3_redmine.sql* fájlt!
 
 A szerver alapjáraton a **8000**-es PORT-ot használja. Ha ezt itt megváltoztatjuk, attól a kliens oldalon nem fog változni és a kliens ezáltal használhatatlan lesz, ezért ennek a változtatását **nem** javasoljuk!  
 
@@ -69,13 +72,13 @@ Kliens futtatása:
 ```
 npm start
 ```  
-A kliens alapjáraton a **3000**-es PORT-ot használja. Ezt itt nyugodtan változtathatjuk a *frontend.js* fájlban.
+A kliens alapjáraton a **3000**-es PORT-ot használja. Ezt itt nyugodtan változtathatjuk a *frontend.js* fájlban. Viszont ha megváltoztatjuk akkor a server .env fájljában a *CORS_WHITELIST* listához adjuk hozzá az új linket.
   
 Ha futtatjuk a klienst akkor a [http://localhost:3000/](http://localhost:3000/) oldalon elérhetjük azt alapértelmezetten.
 
 ### Bejelentkezéshez használható adatok:
- |      Email     |   Jelszó    |
- |----------------|:-----------:|
- | teszt@elek.hu  | tesztelek0  |
- | teszt@tamas.hu | teszttamas1 |
- | teszt@bela.hu  | tesztbela2  |
+ |      Email     |   Jelszó    |   Jogosultság  |
+ |----------------|:-----------:|----------------|
+ | teszt@elek.hu  | tesztelek0  |     Manager    |
+ | teszt@tamas.hu | teszttamas1 |     Manager    |
+ | teszt@bela.hu  | tesztbela2  | Manager, Admin |
