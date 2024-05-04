@@ -1,6 +1,12 @@
 class API {
     constructor(link = "http://localhost:8000") {
       this.Server = link;
+
+      this.Socket = io(this.Server);
+
+      this.Socket.on('globalEvent', (message) => {
+        console.log(message);
+      });
     }
 
     async ShowToast(text, style = "primary") {
@@ -131,6 +137,12 @@ class API {
           }
         }); 
       });
+    }
+
+    async SendMessage(type, message) {
+      if(this.Socket) {
+        this.Socket.emit(type, message);
+      } else console.error("Socket hiba!");
     }
 }
 export default new API();

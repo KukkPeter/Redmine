@@ -6,6 +6,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import * as db from './models/index';
 import { RegisterRoutes } from './routes';
 import { errorHandler } from './middlewares/errorHandler';
+import { Server } from 'socket.io';
 
 db.sequelize.sync().then(() => {
     console.log('Database synced.');
@@ -38,6 +39,18 @@ try {
 } catch(err) {
     console.log('Unable to load swagger.json', err);
 }
+
+const io = new Server(http, {cors: corsOptions });
+
+io.on('connection', (socket) => {
+    // emitted to everyone
+    //io.emit('globalEvent', { a: "teszt", b: "teszt"});
+
+    // emitted to everyone except current socket
+    //socket.broadcast.emit('globalEvent', { a: "teszt", b: "teszt"});
+    
+
+});
 
 const port = process.env.API_PORT || 8000;
 http.listen(port, () => {

@@ -1,10 +1,10 @@
 
 # Rendszerfejlesztés - Redmine
   
-**Harmadik beadandó**  
+**Negyedik beadandó**  
 
-Határidő: *2024. április 24.*   
-Feladat: Authorizáció, Authentikáció
+Határidő: *2024. május 8.*   
+Feladat: Socket
   
 # Útmutató
 ## NodeJS  
