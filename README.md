@@ -3,7 +3,7 @@
   
 **Harmadik beadandó**  
 
-Határidő: *2024. április 24.*   
+Határidő: *2024. május 2.*   
 Feladat: Authorizáció, Authentikáció
   
 # Útmutató
