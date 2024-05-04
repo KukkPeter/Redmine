@@ -3,6 +3,7 @@ import API from './api.js';
 class MainPage {
     constructor() {
         $('#btnCheck').attr("showOwnTasks", false);
+        this.SelectedProject = -1;
     }
     
     deleteProject(projectId) {
@@ -10,6 +11,8 @@ class MainPage {
             // Sikeres lekérdezés
             API.ShowToast(res.message, 'success');
             this.loadProjects();
+
+            API.SendMessage('globalEvent', 'deleteProject');
         }).catch(err => {
             // Sikertelen lekérdezés
             console.error(err);
@@ -21,6 +24,8 @@ class MainPage {
             // Sikeres lekérdezés
             API.ShowToast(res.message, 'success');
             this.selectProject(projectId);
+
+            API.SendMessage('globalEvent', `deleteTask:${projectId}`);
         }).catch(err => {
             // Sikertelen lekérdezés
             console.error(err);
@@ -42,6 +47,8 @@ class MainPage {
                 API.ShowToast(res.message, 'success');
 
                 window.Main.loadProjects();
+
+                API.SendMessage('globalEvent', 'newProject');
             }).catch(err => {
                 // Sikertelen lekérdezés
                 API.ShowToast(err.data, 'warning');
@@ -99,6 +106,8 @@ class MainPage {
                 window.Main.resetProjectSort();
 
                 API.ShowToast(res.message, 'success');
+
+                API.SendMessage('globalEvent', 'newType');
             }).catch(err => {
                 // Sikertelen lekérdezés
                 API.ShowToast(err.data, 'warning');
@@ -115,6 +124,8 @@ class MainPage {
             window.Main.resetProjectSort();
 
             API.ShowToast(res.message, 'success');
+            
+            API.SendMessage('globalEvent', 'deleteType');
         }).catch(err => {
             // Sikertelen lekérdezés
             API.ShowToast(err.data, 'warning');
@@ -202,6 +213,8 @@ class MainPage {
         // Feladatok betöltése
         API.Get(`/projects/${id}/tasks`).then(res => {
             // Sikeres lekérdezés
+            API.SendMessage('checkTasks', res.data);
+
             res.data.forEach(e => {
                 API.Get(`/user/${e.user_id}`).then(res_user => {
                     // Sikeres lekérdezés
@@ -257,6 +270,7 @@ class MainPage {
             console.error(err);
         });
 
+        this.SelectedProject = id;
         $('#taskModal').modal('show');
     }
 
@@ -294,6 +308,8 @@ class MainPage {
                     document.getElementById('newTaskName').value = "";
                     document.getElementById('newTaskDesc').value = "";
                     document.getElementById('developersSelectList').innerHTML = "<option selected>Válassz fejlesztőt</option>";
+
+                    API.SendMessage('globalEvent', `newTask:${projectId}`);
                 }).catch(err => {
                     // Sikertelen lekérdezés
                     console.error(err);
@@ -365,7 +381,10 @@ class MainPage {
     // ADMIN CHECK & Welcome text
     API.Get('/user/myself').then(res => {
         // Sikeres lekérdezés
-        
+
+        // Socket initial üzenet
+        API.SendMessage('initial');
+
         // "Bejelentkezve, mint ..." szöveg feltöltése
         document.getElementById('loggedInUsername').innerHTML = res.data.manager.name;
 
@@ -456,7 +475,7 @@ class MainPage {
         }
     }).catch(err => {
         // Sikertelen lekérdezés
-        console.log(err);
+        console.error(err);
     });
 
     // Projektek betöltése
@@ -473,4 +492,42 @@ class MainPage {
 
     // Hozzáadás gomb
     document.getElementById('btnNewTask').addEventListener('click', window.Main.addNewTask);
+
+    // Feladat Modal bezárásnál SelectedProject visszaállítása '-1'-re!
+    document.getElementById('btnTaskModalHeaderClose').addEventListener('click', function() { window.Main.SelectedProject = -1; });
+    document.getElementById('btnTaskModalFooterClose').addEventListener('click', function() { window.Main.SelectedProject = -1; });
+
+    // Egy-két Socket Endpoint
+    API.Socket.on('update', (message) => {
+        console.log(`%c[SOCKET] %cKontent frissítés. (${message.type})`, 'color: #fcec03', 'color: white');
+        switch(message.type) {
+            case "newType":
+                window.Main.resetProjectSort();
+                break;
+            case "deleteType":
+                window.Main.resetProjectSort();
+                break;
+            case "newProject":
+                window.Main.loadProjects();
+                break;
+            case "deleteProject":
+                window.Main.loadProjects();
+                break;
+            case "newTask":
+                if(window.Main.SelectedProject == message.id) {
+                    $('#taskModal').modal('show');
+                    window.Main.selectProject(message.id);
+                }   
+                break;
+            case "deleteTask":
+                if(window.Main.SelectedProject == message.id) {
+                    $('#taskModal').modal('show');
+                    window.Main.selectProject(message.id);
+                }    
+                break;
+            default:
+                console.error("Ismeretlen művelet!");
+                break;
+        }
+    });
 })();

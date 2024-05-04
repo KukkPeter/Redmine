@@ -84,7 +84,6 @@ class Authenticator {
 
     logout() {
         API.Post('/user/logout').then(res => {
-            console.log(res);
             localStorage.clear();
             window.location.replace('http://localhost:3000#logout');
         }).catch(error => {
