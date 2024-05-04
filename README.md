@@ -53,7 +53,7 @@ Illetve változás áll fent az adatbázison belül az adatbázis sémában:
 
 A szerver alapjáraton a **8000**-es PORT-ot használja. Ha ezt itt megváltoztatjuk, attól a kliens oldalon nem fog változni és a kliens ezáltal használhatatlan lesz, ezért ennek a változtatását **nem** javasoljuk!  
 
-Ha mégis változtatni akarják ezt a portot akkor ne felejtsék el változtatni a "*client/public/scripts/api.js*" fájl elején található constructorban is megváltoztatni a link portját! 
+Ha mégis változtatni akarják ezt a portot akkor ne felejtsék el a "*client/public/scripts/api.js*" fájl elején található constructorban is megváltoztatni a link portját! 
   
 Ha fut a szerver akkor a Swagger Dokumentációt elérhetik a [http://localhost:8000/docs](http://localhost:8000/docs) link alatt.
   
@@ -74,7 +74,12 @@ npm start
 ```  
 A kliens alapjáraton a **3000**-es PORT-ot használja. Ezt itt nyugodtan változtathatjuk a *frontend.js* fájlban. Viszont ha megváltoztatjuk akkor a server .env fájljában a *CORS_WHITELIST* listához adjuk hozzá az új linket.
   
-Ha futtatjuk a klienst akkor a [http://localhost:3000/](http://localhost:3000/) oldalon elérhetjük azt alapértelmezetten.
+Ha futtatjuk a klienst akkor a [http://localhost:3000/](http://localhost:3000/) oldalon elérhetjük azt alapértelmezetten.  
+
+A Socket és API hívásokat megtekinthetik a console-ból!  
+
+Ha például az Admin hozzáad egy új projektet vagy töröl egy feladat típust, akkor az oldal automatikusan frissül mindenkinél akinél meg van nyitva. (Socket híváson keresztül történik ez.)  
+Ezen felül a hamarosan lejáró és a lejárt feladatok megjelennek egy Toast üzenetben amint megnyitunk egy projektet. (Socket híváson keresztül nyílnak meg ezek a Toastok.)
 
 ### Bejelentkezéshez használható adatok:
  |      Email     |   Jelszó    |   Jogosultság  |
